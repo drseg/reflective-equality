@@ -41,7 +41,7 @@ class EquatablesWithSimpleFields: EquatableByReflectionTests {
         assertNotEqual(OneField(field: 1), OneField(field: 2))
     }
     
-    func testStructsWithSingleEqualValueEqual() {
+    func testStructsWithSingleSameValueEqual() {
         struct OneField: EquatableByReflection {
             let field = 1
         }
@@ -49,13 +49,17 @@ class EquatablesWithSimpleFields: EquatableByReflectionTests {
         assertEqual(OneField(), OneField())
     }
     
+    class OneField: EquatableByReflection {
+        let field: Int
+        init(_ field: Int) { self.field = field }
+    }
+    
     func testClassesWithSingleDifferentValueNotEqual() {
-        class OneField: EquatableByReflection {
-            let field: Int
-            init(_ field: Int) { self.field = field }
-        }
-        
         assertNotEqual(OneField(1), OneField(2))
+    }
+    
+    func testClassesWithSingleSameValueEqual() {
+        assertEqual(OneField(1), OneField(1))
     }
     
     func testSingleEnumCasesEqual() {
@@ -79,4 +83,8 @@ class EquatablesWithSimpleFields: EquatableByReflectionTests {
     func testSameEnumCaseWithDifferentValuesNotEqual() {
         assertNotEqual(Single.first(1), Single.first(2))
     }
+}
+
+class EquatablesWithComplexFields: EquatableByReflectionTests {
+    
 }
