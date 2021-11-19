@@ -2,10 +2,31 @@ import XCTest
 @testable import EquatableByReflection
 
 final class EquatableByReflectionTests: XCTestCase {
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(EquatableByReflection().text, "Hello, World!")
+    
+    func testDifferentTypesNotEqual() {
+        struct First: EquatableByReflection {}
+        struct Second {}
+        
+        XCTAssertFalse(First().isEqual(Second()))
     }
+    
+    func testEmptyStructsEqual() {
+        struct Null: EquatableByReflection {}
+        
+        XCTAssertTrue(Null().isEqual(Null()))
+    }
+    
+    func testEmptyClassesEqual() {
+        class Null: EquatableByReflection {}
+        
+        XCTAssertTrue(Null().isEqual(Null()))
+    }
+    
+    
+    
+//    func testEmptyEnumsEqual() {
+//        enum Null: EquatableByReflection {}
+//
+//        XCTAssertTrue(Null().isEqual(Null()))
+//    }
 }

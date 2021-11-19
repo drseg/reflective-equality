@@ -1,6 +1,12 @@
-public struct EquatableByReflection {
-    public private(set) var text = "Hello, World!"
+protocol EquatableByReflection {
+    func isEqual(_ other: Any) -> Bool
+}
 
-    public init() {
+extension EquatableByReflection {
+    func isEqual(_ other: Any) -> Bool {
+        guard type(of: self) == type(of: other) else {
+            return false
+        }
+        return true
     }
 }
