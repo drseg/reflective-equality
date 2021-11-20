@@ -33,55 +33,37 @@ class EquatablesWithSimpleFields: EquatableByReflectionTests {
         assertEqual(Null(), Null())
     }
     
-    func testStructsWithSingleDifferentValueNotEqual() {
+    func testStructsWithSingleValue() {
         struct OneField: EquatableByReflection {
             let field: Int
         }
         
         assertNotEqual(OneField(field: 1), OneField(field: 2))
+        assertEqual(OneField(field: 1), OneField(field: 1))
     }
     
-    func testStructsWithSingleSameValueEqual() {
-        struct OneField: EquatableByReflection {
-            let field = 1
+    func testClassesWithSingleDifferentValue() {
+        class OneField: EquatableByReflection {
+            let field: Int
+            init(_ field: Int) { self.field = field }
         }
         
-        assertEqual(OneField(), OneField())
-    }
-    
-    class OneField: EquatableByReflection {
-        let field: Int
-        init(_ field: Int) { self.field = field }
-    }
-    
-    func testClassesWithSingleDifferentValueNotEqual() {
         assertNotEqual(OneField(1), OneField(2))
-    }
-    
-    func testClassesWithSingleSameValueEqual() {
         assertEqual(OneField(1), OneField(1))
     }
     
-    func testSingleEnumCasesEqual() {
-        enum Null: EquatableByReflection { case single }
-        
-        assertEqual(Null.single, Null.single)
-    }
-    
-    func testDifferentEnumCasesNotEqual() {
+    func testEnumCases() {
         enum Two: EquatableByReflection { case first, second }
         
         assertNotEqual(Two.first, Two.second)
+        assertEqual(Two.first, Two.first)
     }
     
-    enum Single: EquatableByReflection { case first(Int) }
-    
-    func testEqualAssociatedValuesEqual() {
-        assertEqual(Single.first(1), Single.first(1))
-    }
-    
-    func testSameEnumCaseWithDifferentValuesNotEqual() {
-        assertNotEqual(Single.first(1), Single.first(2))
+    func testEnumAssociatedValues() {
+        enum OneValue: EquatableByReflection { case first(Int) }
+        
+        assertEqual(OneValue.first(1), OneValue.first(1))
+        assertNotEqual(OneValue.first(1), OneValue.first(2))
     }
 }
 
