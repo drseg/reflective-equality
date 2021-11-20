@@ -1,8 +1,6 @@
 import XCTest
 @testable import EquatableByReflection
 
-// ignored property list?
-
 class EquatableByReflectionTests: XCTestCase {
     
     func assertEqual(_ lhs: Any, _ rhs: Any) {
@@ -58,6 +56,11 @@ class SimpleFoundationTests: EquatableByReflectionTests {
     func testNonEqualOptionals() {
         assertNotEqual(some(1), none)
         assertNotEqual(some(1), some(2))
+    }
+    
+    func testTuples() {
+        assertEqual((1, 1), (1, 1))
+        assertNotEqual((1, 2), (1, 1))
     }
 }
 
@@ -129,6 +132,7 @@ class ComplexFoundationTests: EquatableByReflectionTests {
         let d = NSString(string: "<")
         
         assertEqual(a, b)
+        
         assertNotEqual(a, c)
         assertNotEqual(a, d)
     }
@@ -145,6 +149,15 @@ class ComplexFoundationTests: EquatableByReflectionTests {
         assertEqual(a2, a3)
         
         assertNotEqual(a1, a2)
+    }
+    
+    func testComplexTuples() {
+        let t1 = (NSObject(), NSString(string: "a"))
+        let t2 = (NSObject(), NSString(string: "a"))
+        let t3 = (NSObject(), NSString(string: "b"))
+            
+        assertEqual(t1, t2)
+        assertNotEqual(t1, t3)
     }
 }
 
