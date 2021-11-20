@@ -5,38 +5,90 @@ import XCTest
 
 class EquatableByReflectionTests: XCTestCase {
     
-    func assertEqual(_ lhs: EquatableByReflection, _ rhs: Any) {
-        XCTAssertTrue(lhs.isEqual(rhs))
+    func assertEqual(_ lhs: Any, _ rhs: Any) {
+        XCTAssertTrue((Equaliser.isEqual(lhs, rhs)))
     }
     
-    func assertNotEqual(_ lhs: EquatableByReflection, _ rhs: Any) {
-        XCTAssertFalse(lhs.isEqual(rhs))
+    func assertNotEqual(_ lhs: Any, _ rhs: Any) {
+        XCTAssertFalse(Equaliser.isEqual(lhs, rhs))
     }
 }
 
-class EquatablesWithSimpleFields: EquatableByReflectionTests {
+class SimpleFoundationTests: EquatableByReflectionTests {
+    
+    func testArray() {
+        assertEqual([], [])
+        assertEqual([1], [1])
+        assertEqual([1, 2], [1, 2])
+        assertEqual([[1, 2], [1, 2]], [[1, 2], [1, 2]])
+        
+        assertNotEqual([], [1])
+        assertNotEqual([1], [2])
+        assertNotEqual([1, 2], [1, 3])
+        assertNotEqual([[1, 2], [1, 2]], [[1, 2], [1, 3]])
+    }
+    
+    func testDictionary() {
+        assertEqual([:], [:])
+        assertEqual(["1": 1], ["1": 1])
+        assertEqual(["1": ["1": 1]], ["1": ["1": 1]])
+        
+        assertNotEqual([:], ["1": 1])
+        assertNotEqual(["1": 1], ["1": 2])
+        assertNotEqual(["1": 1], ["2": 1])
+    }
+    
+    func testOptional() {
+        var none            :  Any { Optional<Int>.none     as Any }
+        func some(_ i: Int) -> Any { Optional<Int>.some(i)  as Any }
+        
+        assertEqual(none, none)
+        assertEqual(some(1), some(1))
+        
+        assertNotEqual(some(1), none)
+        assertNotEqual(some(1), some(2))
+    }
+}
+
+class ComplexFoundationTests: EquatableByReflectionTests {
+
+    var nsO: NSObject { NSObject() }
+    
+    func testArrayOfNSObject() {
+        assertEqual([nsO], [nsO])
+        assertEqual([[nsO]], [[nsO]])
+        
+        assertNotEqual([[nsO]], [[nsO, nsO]])
+    }
+    
+    func testDictionaryOfNSObject() {
+        assertEqual([nsO: 1], [nsO: 1])
+    }
+}
+
+class SimpleCompositionTests: EquatableByReflectionTests {
     
     func testDifferentTypesNotEqual() {
-        struct First: EquatableByReflection {}
+        struct First {}
         struct Second {}
         
         assertNotEqual(First(), Second())
     }
     
     func testEmptyStructsEqual() {
-        struct Null: EquatableByReflection {}
+        struct Null {}
         
         assertEqual(Null(), Null())
     }
     
     func testEmptyClassesEqual() {
-        class Null: EquatableByReflection {}
+        class Null {}
         
         assertEqual(Null(), Null())
     }
     
     func testStructsWithSingleValue() {
-        struct OneField: EquatableByReflection {
+        struct OneField {
             let field: Int
         }
         
@@ -45,7 +97,7 @@ class EquatablesWithSimpleFields: EquatableByReflectionTests {
     }
     
     func testClassesWithSingleDifferentValue() {
-        class OneField: EquatableByReflection {
+        class OneField {
             let field: Int
             init(_ field: Int) { self.field = field }
         }
@@ -55,24 +107,24 @@ class EquatablesWithSimpleFields: EquatableByReflectionTests {
     }
     
     func testEnumCases() {
-        enum Two: EquatableByReflection { case first, second }
+        enum Two { case first, second }
         
         assertNotEqual(Two.first, Two.second)
         assertEqual(Two.first, Two.first)
     }
     
     func testEnumAssociatedValues() {
-        enum OneValue: EquatableByReflection { case first(Int) }
+        enum OneValue { case first(Int) }
         
         assertEqual(OneValue.first(1), OneValue.first(1))
         assertNotEqual(OneValue.first(1), OneValue.first(2))
     }
 }
 
-class EquatablesWithComplexFields: EquatableByReflectionTests {
+class ComplexCompositionTests: EquatableByReflectionTests {
     
     func testStructWithNSObjectEqualByPropertyValue() {
-        struct NSHolder: EquatableByReflection {
+        struct NSHolder {
             let o = NSObject()
         }
         
@@ -80,7 +132,7 @@ class EquatablesWithComplexFields: EquatableByReflectionTests {
     }
     
     func testClassWithNSObjectEqualByPropertyValue() {
-        class NSHolder: EquatableByReflection {
+        class NSHolder {
             let o = NSObject()
         }
         
@@ -88,7 +140,7 @@ class EquatablesWithComplexFields: EquatableByReflectionTests {
     }
     
     func testStructWithNSObjectAndInt() {
-        struct NSHolder: EquatableByReflection {
+        struct NSHolder {
             let o = NSObject()
             let i: Int
         }
@@ -98,7 +150,7 @@ class EquatablesWithComplexFields: EquatableByReflectionTests {
     }
     
     func testClassWithNSObjectAndInt() {
-        class NSHolder: EquatableByReflection {
+        class NSHolder {
             let o = NSObject()
             let i: Int
             
@@ -115,7 +167,7 @@ class EquatablesWithComplexFields: EquatableByReflectionTests {
     }
     
     func testStructWithNestedStruct() {
-        struct NSHolder: EquatableByReflection {
+        struct NSHolder {
             let o = NSObject()
             let i: Int
             let n: Nested
@@ -135,7 +187,7 @@ class EquatablesWithComplexFields: EquatableByReflectionTests {
     }
     
     func testClassWithNestedStruct() {
-        class NSHolder: EquatableByReflection {
+        class NSHolder {
             let o = NSObject()
             let i: Int
             let n: Nested
@@ -155,7 +207,8 @@ class EquatablesWithComplexFields: EquatableByReflectionTests {
     }
     
     func testEnumWithAssociatedNSObject() {
-        enum ObjectCase: EquatableByReflection { case ns(NSObject) }
+        enum ObjectCase { case ns(NSObject) }
+        
         assertEqual(ObjectCase.ns(NSObject()), ObjectCase.ns(NSObject()))
     }
 }

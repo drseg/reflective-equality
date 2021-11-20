@@ -1,29 +1,36 @@
 import Foundation
 
-protocol EquatableByReflection {
-    func isEqual(_ other: Any) -> Bool
-}
-
-extension EquatableByReflection {
-    func isEqual(_ other: Any) -> Bool {
+struct Equaliser {
+    
+    static func isEqual(_ lhs: Any, _ rhs: Any) -> Bool {
         var typesDiffer: Bool {
-            type(of: self) != type(of: other)
+            type(of: lhs) != type(of: rhs)
         }
         
         var isEnumWithoutAssociatedValues: Bool {
-            let mirror = Mirror(reflecting: self)
+            let mirror = Mirror(reflecting: lhs)
             return mirror.displayStyle == .enum && mirror.children.isEmpty
         }
         
         func getProperties(_ obj: Any) -> [Any] {
             func getChildProperties(on o: Any) -> Any? {
                 let mirror = Mirror(reflecting: o)
-                let hasNoChildren = mirror.children.count == 0
-                let isClass = mirror.displayStyle == .class
+                
+                var hasNoChildren: Bool {
+                    mirror.children.count == 0
+                }
+                
+                var isClass: Bool {
+                    mirror.displayStyle == .class
+                }
+                
+                var className: Any {
+                    String(describing: o).split(separator: ":").first!.dropFirst()
+                }
                 
                 return hasNoChildren
-                    ? (isClass ? nil : o)
-                    : getProperties(o)
+                ? (isClass ? className : o)
+                : getProperties(o)
             }
             
             return Mirror(reflecting: obj)
@@ -37,9 +44,15 @@ extension EquatableByReflection {
         }
         
         if isEnumWithoutAssociatedValues {
-            return String(describing: self) == String(describing: other)
+            return String(describing: lhs) == String(describing: rhs)
         }
         
-        return String(describing: getProperties(self)) == String(describing: getProperties(other))
+        let lhsResult = getProperties(lhs)
+        let rhsResult = getProperties(rhs)
+        
+        print(lhsResult)
+        print(rhsResult)
+        
+        return String(describing: lhsResult) == String(describing: rhsResult)
     }
 }
