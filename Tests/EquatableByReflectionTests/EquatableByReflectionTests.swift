@@ -6,45 +6,56 @@ import XCTest
 class EquatableByReflectionTests: XCTestCase {
     
     func assertEqual(_ lhs: Any, _ rhs: Any) {
-        XCTAssertTrue((Equaliser.isEqual(lhs, rhs)))
+        assert(lhs, rhs, assertion: XCTAssertTrue)
     }
     
     func assertNotEqual(_ lhs: Any, _ rhs: Any) {
-        XCTAssertFalse(Equaliser.isEqual(lhs, rhs))
+        assert(lhs, rhs, assertion: XCTAssertFalse)
+    }
+    
+    func assert(_ lhs: Any, _ rhs: Any, assertion: (@autoclosure () throws -> Bool, @autoclosure () -> String, StaticString, UInt) -> (), file: StaticString = #file, line: UInt = #line) {
+        assertion(Equaliser.isEqual(lhs, rhs),
+                  "\nLHS: \(String(describing: lhs))\nRHS: \(String(describing: rhs))", file, line)
     }
 }
 
 class SimpleFoundationTests: EquatableByReflectionTests {
     
-    func testArray() {
+    func testEqualArrays() {
         assertEqual([], [])
         assertEqual([1], [1])
         assertEqual([1, 2], [1, 2])
         assertEqual([[1, 2], [1, 2]], [[1, 2], [1, 2]])
-        
+    }
+    
+    func testNonEqualArrays() {
         assertNotEqual([], [1])
         assertNotEqual([1], [2])
         assertNotEqual([1, 2], [1, 3])
         assertNotEqual([[1, 2], [1, 2]], [[1, 2], [1, 3]])
     }
     
-    func testDictionary() {
+    func testEqualDictionaries() {
         assertEqual([:], [:])
         assertEqual(["1": 1], ["1": 1])
         assertEqual(["1": ["1": 1]], ["1": ["1": 1]])
-        
+    }
+    
+    func testNonEqualDictionaries() {
         assertNotEqual([:], ["1": 1])
         assertNotEqual(["1": 1], ["1": 2])
         assertNotEqual(["1": 1], ["2": 1])
     }
+
+    var none            :  Any { Optional<Int>.none     as Any }
+    func some(_ i: Int) -> Any { Optional<Int>.some(i)  as Any }
     
-    func testOptional() {
-        var none            :  Any { Optional<Int>.none     as Any }
-        func some(_ i: Int) -> Any { Optional<Int>.some(i)  as Any }
-        
+    func testEqualOptionals() {
         assertEqual(none, none)
         assertEqual(some(1), some(1))
-        
+    }
+    
+    func testNonEqualOptionals() {
         assertNotEqual(some(1), none)
         assertNotEqual(some(1), some(2))
     }
@@ -81,6 +92,19 @@ class ComplexFoundationTests: EquatableByReflectionTests {
         
         assertNotEqual([B(): A()], [B(): B()])
         assertNotEqual([A(): A()], [B(): A()])
+    }
+    
+    func testNSCollections() {
+        let a = [1, 2, 3, 4, 5]
+        let b = a
+        let c = a + [6]
+        
+        let nsA = a as NSArray
+        let nsB = b as NSArray
+        let nsC = c as NSArray
+        
+        assertEqual(nsA, nsB)
+        assertNotEqual(nsA, nsC)
     }
 }
 
