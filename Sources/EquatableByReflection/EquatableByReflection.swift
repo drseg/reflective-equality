@@ -16,27 +16,43 @@ struct Equaliser {
             func getChildProperties(on o: Any) -> Any? {
                 let mirror = Mirror(reflecting: o)
                 
-                var hasNoChildren: Bool {
-                    mirror.children.count == 0
-                }
-                
                 var isClass: Bool {
                     mirror.displayStyle == .class
                 }
                 
-                var className: Any {
-                    String(describing: o).split(separator: ":").first!.dropFirst()
+                var hasNoChildren: Bool {
+                    mirror.children.count == 0
+                }
+                
+                var formattedClassDescription: Any {
+                    func isDescribedByValue(_ description: String) -> Bool {
+                        description.first != "<" || o is NSString
+                    }
+                    
+                    func getClassName(_ description: String) -> Any {
+                        description.split(separator: ":").first!.dropFirst()
+                    }
+                    
+                    let description = String(describing: o)
+                    
+                    return isDescribedByValue(description)
+                    ? description
+                    : getClassName(description)
                 }
                 
                 return hasNoChildren
-                ? (isClass ? className : o)
+                ? (isClass ? formattedClassDescription : o)
                 : getProperties(o)
             }
             
-            return Mirror(reflecting: obj)
+            let result = Mirror(reflecting: obj)
                 .children
                 .map(\.value)
                 .compactMap(getChildProperties)
+            
+            return result.isEmpty
+            ? [String(describing: obj)]
+            : result
         }
         
         if typesDiffer {

@@ -94,17 +94,43 @@ class ComplexFoundationTests: EquatableByReflectionTests {
         assertNotEqual([A(): A()], [B(): A()])
     }
     
-    func testNSCollections() {
-        let a = [1, 2, 3, 4, 5]
-        let b = a
+    func testNSArrays() {
+        let a = [1, 2, 3, 4, 5] as NSArray
+        let b = NSArray(array: a)
         let c = a + [6]
         
-        let nsA = a as NSArray
-        let nsB = b as NSArray
-        let nsC = c as NSArray
+        let aa = [a, a, a, a, a] as NSArray
+        let bb = NSArray(array: aa)
+        let cc = aa.adding(aa)
         
-        assertEqual(nsA, nsB)
-        assertNotEqual(nsA, nsC)
+        assertEqual(NSArray(), NSArray())
+        assertEqual(a, b)
+        assertEqual(aa, bb)
+        
+        assertNotEqual(a, c)
+        assertNotEqual(aa, cc)
+    }
+    
+    func testNSDictionaries() {
+        let a = ["1": 1] as NSDictionary
+        let b = NSDictionary(dictionary: a)
+        let c = ["2": 1] as NSDictionary
+        
+        assertEqual(NSDictionary(), NSDictionary())
+        assertEqual(a, b)
+        
+        assertNotEqual(a, c)
+    }
+    
+    func testNSStrings() {
+        let a = NSString(string: "a")
+        let b = a
+        let c = NSString(string: "c")
+        let d = NSString(string: "<")
+        
+        assertEqual(a, b)
+        assertNotEqual(a, c)
+        assertNotEqual(a, d)
     }
 }
 
@@ -246,6 +272,18 @@ class ComplexCompositionTests: EquatableByReflectionTests {
         
         assertEqual(h1, h2)
         assertNotEqual(h1, h3)
+    }
+    
+    func testNestedNSString() {
+        struct StringHolder {
+            let s: NSString
+        }
+        
+        assertEqual(StringHolder(s: NSString(string: "<")),
+                    StringHolder(s: NSString(string: "<")))
+        
+        assertNotEqual(StringHolder(s: NSString(string: "<1")),
+                       StringHolder(s: NSString(string: "<2")))
     }
     
     func testEnumWithAssociatedNSObject() {
