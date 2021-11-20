@@ -63,6 +63,24 @@ class ComplexFoundationTests: EquatableByReflectionTests {
     
     func testDictionaryOfNSObject() {
         assertEqual([nsO: 1], [nsO: 1])
+        assertEqual([nsO: nsO], [nsO: nsO])
+        
+        assertNotEqual([nsO: [nsO]], [nsO: [nsO, nsO]])
+        assertNotEqual([nsO: 1], [nsO: 2])
+    }
+    
+    func testPolymorphicCollections() {
+        class A: NSObject {}
+        class B: NSObject {}
+        
+        assertEqual([A()], [A()])
+        assertNotEqual([A()], [B()])
+        
+        assertEqual([A(): B()], [A(): B()])
+        assertEqual([B(): A()], [B(): A()])
+        
+        assertNotEqual([B(): A()], [B(): B()])
+        assertNotEqual([A(): A()], [B(): A()])
     }
 }
 
