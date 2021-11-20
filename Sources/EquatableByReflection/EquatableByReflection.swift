@@ -6,21 +6,13 @@ protocol EquatableByReflection {
 
 extension EquatableByReflection {
     func isEqual(_ other: Any) -> Bool {
-        var areSameType: Bool {
-            type(of: self) == type(of: other)
+        var typesDiffer: Bool {
+            type(of: self) != type(of: other)
         }
         
-        var isNotEnumWithoutAssociatedValues: Bool {
+        var isEnumWithoutAssociatedValues: Bool {
             let mirror = Mirror(reflecting: self)
-            return mirror.displayStyle != .enum || !mirror.children.isEmpty
-        }
-        
-        guard areSameType else {
-            return false
-        }
-        
-        guard isNotEnumWithoutAssociatedValues else {
-            return String(describing: self) == String(describing: other)
+            return mirror.displayStyle == .enum && mirror.children.isEmpty
         }
         
         func getProperties(_ obj: Any) -> [Any] {
@@ -29,18 +21,23 @@ extension EquatableByReflection {
                 let hasNoChildren = mirror.children.count == 0
                 let isClass = mirror.displayStyle == .class
                 
-                if hasNoChildren {
-                    return isClass ? nil : o
-                }
-                else {
-                    return getProperties(o)
-                }
+                return hasNoChildren
+                    ? (isClass ? nil : o)
+                    : getProperties(o)
             }
             
             return Mirror(reflecting: obj)
                 .children
                 .map(\.value)
                 .compactMap(getChildProperties)
+        }
+        
+        if typesDiffer {
+            return false
+        }
+        
+        if isEnumWithoutAssociatedValues {
+            return String(describing: self) == String(describing: other)
         }
         
         return String(describing: getProperties(self)) == String(describing: getProperties(other))
