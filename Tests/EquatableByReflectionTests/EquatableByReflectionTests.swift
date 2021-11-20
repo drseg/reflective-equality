@@ -96,4 +96,66 @@ class EquatablesWithComplexFields: EquatableByReflectionTests {
         assertEqual(NSHolder(i: 1), NSHolder(i: 1))
         assertNotEqual(NSHolder(i: 1), NSHolder(i: 2))
     }
+    
+    func testClassWithNSObjectAndInt() {
+        class NSHolder: EquatableByReflection {
+            let o = NSObject()
+            let i: Int
+            
+            init(i: Int) { self.i = i }
+        }
+        
+        assertEqual(NSHolder(i: 1), NSHolder(i: 1))
+        assertNotEqual(NSHolder(i: 1), NSHolder(i: 2))
+    }
+
+    struct Nested {
+        let i: Int
+        let o = NSObject()
+    }
+    
+    func testStructWithNestedStruct() {
+        struct NSHolder: EquatableByReflection {
+            let o = NSObject()
+            let i: Int
+            let n: Nested
+            
+            init(i: Int, n: Nested) {
+                self.i = i
+                self.n = n
+            }
+        }
+        
+        let h1 = NSHolder(i: 1, n: Nested(i: 1))
+        let h2 = NSHolder(i: 1, n: Nested(i: 1))
+        let h3 = NSHolder(i: 1, n: Nested(i: 2))
+        
+        assertEqual(h1, h2)
+        assertNotEqual(h1, h3)
+    }
+    
+    func testClassWithNestedStruct() {
+        class NSHolder: EquatableByReflection {
+            let o = NSObject()
+            let i: Int
+            let n: Nested
+            
+            init(i: Int, n: Nested) {
+                self.i = i
+                self.n = n
+            }
+        }
+        
+        let h1 = NSHolder(i: 1, n: Nested(i: 1))
+        let h2 = NSHolder(i: 1, n: Nested(i: 1))
+        let h3 = NSHolder(i: 1, n: Nested(i: 2))
+        
+        assertEqual(h1, h2)
+        assertNotEqual(h1, h3)
+    }
+    
+    func testEnumWithAssociatedNSObject() {
+        enum ObjectCase: EquatableByReflection { case ns(NSObject) }
+        assertEqual(ObjectCase.ns(NSObject()), ObjectCase.ns(NSObject()))
+    }
 }

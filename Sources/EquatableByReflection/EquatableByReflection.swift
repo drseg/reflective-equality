@@ -6,35 +6,43 @@ protocol EquatableByReflection {
 
 extension EquatableByReflection {
     func isEqual(_ other: Any) -> Bool {
-        guard type(of: self) == type(of: other) else {
+        var areSameType: Bool {
+            type(of: self) == type(of: other)
+        }
+        
+        var isNotEnumWithoutAssociatedValues: Bool {
+            let mirror = Mirror(reflecting: self)
+            return mirror.displayStyle != .enum || !mirror.children.isEmpty
+        }
+        
+        guard areSameType else {
             return false
         }
         
-        guard Mirror(reflecting: self).displayStyle != .enum else {
+        guard isNotEnumWithoutAssociatedValues else {
             return String(describing: self) == String(describing: other)
         }
         
         func getProperties(_ obj: Any) -> [Any] {
-            Mirror(reflecting: obj)
-                .children
-                .map { $0.value }
-                .compactMap {
-                    let mirror = Mirror(reflecting: $0)
-                    if mirror.children.count == 0 {
-                        return mirror.displayStyle == .class ? nil : $0
-                    }
-                    else {
-                        return $0
-                        //return getProperties($0)
-                    }
+            func getChildProperties(on o: Any) -> Any? {
+                let mirror = Mirror(reflecting: o)
+                let hasNoChildren = mirror.children.count == 0
+                let isClass = mirror.displayStyle == .class
+                
+                if hasNoChildren {
+                    return isClass ? nil : o
                 }
+                else {
+                    return getProperties(o)
+                }
+            }
+            
+            return Mirror(reflecting: obj)
+                .children
+                .map(\.value)
+                .compactMap(getChildProperties)
         }
         
-        let selfProperties = getProperties(self)
-        let otherProperties = getProperties(other)
-        
-        print(selfProperties + otherProperties)
-        
-        return String(describing: selfProperties) == String(describing: otherProperties)
+        return String(describing: getProperties(self)) == String(describing: getProperties(other))
     }
 }
