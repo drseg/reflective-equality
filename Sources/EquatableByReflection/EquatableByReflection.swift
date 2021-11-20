@@ -12,21 +12,21 @@ struct Equaliser {
             return mirror.displayStyle == .enum && mirror.children.isEmpty
         }
         
-        func getProperties(_ obj: Any) -> [Any] {
-            func getChildProperties(on o: Any) -> Any? {
+        func properties(of obj: Any) -> [String] {
+            func childProperties(of o: Any) -> Any? {
                 let mirror = Mirror(reflecting: o)
                 
                 var isClass: Bool {
                     mirror.displayStyle == .class
                 }
                 
-                var hasNoChildren: Bool {
-                    mirror.children.count == 0
+                var hasChildren: Bool {
+                    mirror.children.count != 0
                 }
                 
-                var formattedClassDescription: Any {
+                var comparableClassDescription: Any {
                     func isDescribedByValue(_ description: String) -> Bool {
-                        description.first != "<" || o is NSString
+                        description.first != "<"
                     }
                     
                     func getClassName(_ description: String) -> Any {
@@ -40,19 +40,19 @@ struct Equaliser {
                     : getClassName(description)
                 }
                 
-                return hasNoChildren
-                ? (isClass ? formattedClassDescription : o)
-                : getProperties(o)
+                return hasChildren
+                ? properties(of: o)
+                : (isClass ? comparableClassDescription : o)
             }
             
-            let result = Mirror(reflecting: obj)
+            let properties = Mirror(reflecting: obj)
                 .children
                 .map(\.value)
-                .compactMap(getChildProperties)
+                .compactMap(childProperties)
             
-            return result.isEmpty
+            return properties.isEmpty
             ? [String(describing: obj)]
-            : result
+            : [String(describing: properties)]
         }
         
         if typesDiffer {
@@ -63,12 +63,6 @@ struct Equaliser {
             return String(describing: lhs) == String(describing: rhs)
         }
         
-        let lhsResult = getProperties(lhs)
-        let rhsResult = getProperties(rhs)
-        
-        print(lhsResult)
-        print(rhsResult)
-        
-        return String(describing: lhsResult) == String(describing: rhsResult)
+        return properties(of: lhs) == properties(of: rhs)
     }
 }

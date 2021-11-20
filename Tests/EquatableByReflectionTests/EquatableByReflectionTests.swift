@@ -132,6 +132,20 @@ class ComplexFoundationTests: EquatableByReflectionTests {
         assertNotEqual(a, c)
         assertNotEqual(a, d)
     }
+    
+    func testNSArraysOfNSStrings() {
+        let s1 = NSString(string: "a")
+        let s2 = NSString(string: "a")
+        let s3 = NSString(string: "b")
+        let a1 = [s1, s3] as NSArray
+        let a2 = [s3, s1] as NSArray
+        let a3 = [s3, s2] as NSArray
+        
+        assertEqual(a1, a1)
+        assertEqual(a2, a3)
+        
+        assertNotEqual(a1, a2)
+    }
 }
 
 class SimpleCompositionTests: EquatableByReflectionTests {
