@@ -14,7 +14,7 @@ class EquatableByReflectionTests: XCTestCase {
     }
     
     func assert(_ lhs: Any, _ rhs: Any, assertion: (@autoclosure () throws -> Bool, @autoclosure () -> String, StaticString, UInt) -> (), file: StaticString = #file, line: UInt = #line) {
-        assertion(Equaliser().isEqual(lhs, rhs),
+        assertion(haveSameValue(lhs, rhs),
                   "\nLHS: \(String(describing: lhs))\nRHS: \(String(describing: rhs))", file, line)
     }
 }
