@@ -2,7 +2,7 @@ import Foundation
 
 struct Equaliser {
     
-    static func isEqual(_ lhs: Any, _ rhs: Any) -> Bool {
+    func isEqual(_ lhs: Any, _ rhs: Any) -> Bool {
         var typesDiffer: Bool {
             type(of: lhs) != type(of: rhs)
         }
