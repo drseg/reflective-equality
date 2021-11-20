@@ -25,14 +25,14 @@ fileprivate func properties(of obj: Any) -> [String] {
     let properties = Mirror(reflecting: obj)
         .children
         .map(\.value)
-        .compactMap(childProperties)
+        .map(childProperties)
     
     return properties.isEmpty
     ? [String(describing: obj)]
     : [String(describing: properties)]
 }
 
-fileprivate func childProperties(of obj: Any) -> Any? {
+fileprivate func childProperties(of obj: Any) -> Any {
     let mirror = Mirror(reflecting: obj)
     
     var isClass: Bool {
