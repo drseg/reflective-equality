@@ -1,6 +1,6 @@
 import Foundation
 
-func haveSameValue(_ lhs: Any, _ rhs: Any) -> Bool {
+public func haveSameValue(_ lhs: Any, _ rhs: Any) -> Bool {
     if typesDiffer(lhs, rhs) {
         return false
     }
@@ -55,7 +55,7 @@ fileprivate func childProperties(of obj: Any) -> Any {
        : description(of: obj)
 }
 
-fileprivate func comparableClassDescription(of obj: Any) -> Any {    
+fileprivate func comparableClassDescription(of obj: Any) -> Any {
     let description = description(of: obj)
     
     return description.isObjectValue
