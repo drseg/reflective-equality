@@ -12,8 +12,12 @@ class EquatableByReflectionTests: XCTestCase {
     }
     
     func assert(_ lhs: Any, _ rhs: Any, assertion: (@autoclosure () throws -> Bool, @autoclosure () -> String, StaticString, UInt) -> (), file: StaticString = #file, line: UInt = #line) {
-        assertion(haveSameValue(lhs, rhs),
-                  "\nLHS: \(String(describing: lhs))\nRHS: \(String(describing: rhs))", file, line)
+        let errorMessage =
+        """
+        \nLHS: \(String(describing: lhs))
+        \nRHS: \(String(describing: rhs))
+        """
+        assertion(haveSameValue(lhs, rhs), errorMessage, file, line)
     }
 }
 
