@@ -22,7 +22,7 @@ fileprivate func isEnumWithoutAssociatedValues(_ candidate: Any) -> Bool {
 }
 
 fileprivate func descriptionsAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
-    String(describing: lhs) == String(describing: rhs)
+    description(of: lhs) == description(of: rhs)
 }
 
 fileprivate func propertiesAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
@@ -30,14 +30,18 @@ fileprivate func propertiesAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
 }
 
 fileprivate func properties(of obj: Any) -> String {
-    let properties = Mirror(reflecting: obj)
+    let objProperties = Mirror(reflecting: obj)
         .children
         .map(\.value)
         .map(childProperties)
     
-    return properties.isEmpty
-    ? String(describing: obj)
-    : String(describing: properties)
+    return objProperties.isEmpty
+    ? description(of: obj)
+    : description(of: objProperties)
+}
+
+fileprivate func description(of obj: Any) -> String {
+    String(describing: obj)
 }
 
 fileprivate func childProperties(of obj: Any) -> Any {
