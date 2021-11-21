@@ -6,14 +6,14 @@ class EquatableByReflectionTests: XCTestCase {
     var nsO: NSObject { NSObject() }
     
     func assertEqual(_ lhs: Any, _ rhs: Any) {
-        assert(lhs, rhs, assertion: XCTAssertTrue)
+        assert(XCTAssertTrue, lhs, rhs)
     }
     
     func assertNotEqual(_ lhs: Any, _ rhs: Any) {
-        assert(lhs, rhs, assertion: XCTAssertFalse)
+        assert(XCTAssertFalse, lhs, rhs)
     }
     
-    func assert(_ lhs: Any, _ rhs: Any, assertion: (@autoclosure () throws -> Bool, @autoclosure () -> String, StaticString, UInt) -> (), file: StaticString = #file, line: UInt = #line) {
+    func assert(_ assertion: (@autoclosure () throws -> Bool, @autoclosure () -> String, StaticString, UInt) -> (), _ lhs: Any, _ rhs: Any, file: StaticString = #file, line: UInt = #line) {
         let errorMessage =
         """
         \nLHS: \(String(describing: lhs))
@@ -329,6 +329,10 @@ class ComplexCompositionTests: EquatableByReflectionTests {
         
         assertNotEqual(StringHolder(s: "<1".ns),
                        StringHolder(s: "<2".ns))
+    }
+    
+    func testNestedArraysWithComplexObjects() throws {
+        throw XCTSkip()
     }
     
     func testEnumWithAssociatedNSObject() {

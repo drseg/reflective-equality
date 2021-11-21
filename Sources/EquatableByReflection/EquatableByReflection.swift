@@ -26,8 +26,8 @@ fileprivate func descriptionsAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
     description(of: lhs) == description(of: rhs)
 }
 
-fileprivate func children(of any: Any) -> String {
-    let properties = mirror(of: any)
+fileprivate func children(of instance: Any) -> String {
+    let properties = mirror(of: instance)
         .children
         .map(\.value)
         .map(subChildren)
@@ -35,28 +35,28 @@ fileprivate func children(of any: Any) -> String {
     return description(of: properties)
 }
 
-fileprivate func mirror(of any: Any) -> Mirror {
-    Mirror(reflecting: any)
+fileprivate func mirror(of instance: Any) -> Mirror {
+    Mirror(reflecting: instance)
 }
 
-fileprivate func description(of any: Any) -> String {
-    String(describing: any)
+fileprivate func description(of instance: Any) -> String {
+    String(describing: instance)
 }
 
-fileprivate func subChildren(of any: Any) -> Any {
+fileprivate func subChildren(of instance: Any) -> Any {
     var isClass: Bool {
-        mirror(of: any).displayStyle == .class
+        mirror(of: instance).displayStyle == .class
     }
     
-    return hasChildren(any)
-    ? children(of: any)
+    return hasChildren(instance)
+    ? children(of: instance)
     : isClass
-       ? comparableClassDescription(of: any)
-       : description(of: any)
+       ? comparableClassDescription(of: instance)
+       : description(of: instance)
 }
 
-fileprivate func comparableClassDescription(of any: Any) -> Any {
-    let description = description(of: any)
+fileprivate func comparableClassDescription(of instance: Any) -> Any {
+    let description = description(of: instance)
     
     return description.isClassID
     ? description.className
