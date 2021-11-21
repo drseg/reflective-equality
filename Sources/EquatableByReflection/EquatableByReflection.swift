@@ -48,7 +48,9 @@ fileprivate func childProperties(of obj: Any) -> Any {
     
     return hasProperties(obj)
     ? properties(of: obj)
-    : (isClass ? comparableClassDescription(of: obj) : obj)
+    : isClass
+       ? comparableClassDescription(of: obj)
+       : description(of: obj)
 }
 
 fileprivate func comparableClassDescription(of obj: Any) -> Any {
