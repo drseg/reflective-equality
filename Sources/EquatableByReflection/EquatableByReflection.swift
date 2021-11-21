@@ -5,8 +5,8 @@ public func haveSameValue(_ lhs: Any, _ rhs: Any) -> Bool {
         return false
     }
     
-    return hasProperties(lhs)
-    ? propertiesAreEqual(lhs, rhs)
+    return hasChildren(lhs)
+    ? childrenAreEqual(lhs, rhs)
     : descriptionsAreEqual(lhs, rhs)
 }
 
@@ -14,49 +14,49 @@ fileprivate func typesDiffer(_ lhs: Any, _ rhs: Any) -> Bool {
     type(of: lhs) != type(of: rhs)
 }
 
-fileprivate func hasProperties(_ candidate: Any) -> Bool {
-    mirror(of: candidate).hasProperties
+fileprivate func hasChildren(_ candidate: Any) -> Bool {
+    mirror(of: candidate).hasChildren
 }
 
-fileprivate func propertiesAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
-    properties(of: lhs) == properties(of: rhs)
+fileprivate func childrenAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
+    children(of: lhs) == children(of: rhs)
 }
 
 fileprivate func descriptionsAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
     description(of: lhs) == description(of: rhs)
 }
 
-fileprivate func properties(of obj: Any) -> String {
-    let properties = mirror(of: obj)
+fileprivate func children(of any: Any) -> String {
+    let properties = mirror(of: any)
         .children
         .map(\.value)
-        .map(childProperties)
+        .map(subChildren)
 
     return description(of: properties)
 }
 
-fileprivate func mirror(of obj: Any) -> Mirror {
-    Mirror(reflecting: obj)
+fileprivate func mirror(of any: Any) -> Mirror {
+    Mirror(reflecting: any)
 }
 
-fileprivate func description(of obj: Any) -> String {
-    String(describing: obj)
+fileprivate func description(of any: Any) -> String {
+    String(describing: any)
 }
 
-fileprivate func childProperties(of obj: Any) -> Any {
+fileprivate func subChildren(of any: Any) -> Any {
     var isClass: Bool {
-        mirror(of: obj).displayStyle == .class
+        mirror(of: any).displayStyle == .class
     }
     
-    return hasProperties(obj)
-    ? properties(of: obj)
+    return hasChildren(any)
+    ? children(of: any)
     : isClass
-       ? comparableClassDescription(of: obj)
-       : description(of: obj)
+       ? comparableClassDescription(of: any)
+       : description(of: any)
 }
 
-fileprivate func comparableClassDescription(of obj: Any) -> Any {
-    let description = description(of: obj)
+fileprivate func comparableClassDescription(of any: Any) -> Any {
+    let description = description(of: any)
     
     return description.isClassID
     ? description.className
@@ -64,7 +64,7 @@ fileprivate func comparableClassDescription(of obj: Any) -> Any {
 }
 
 fileprivate extension Mirror {
-    var hasProperties: Bool {
+    var hasChildren: Bool {
         !children.isEmpty
     }
 }
