@@ -138,12 +138,9 @@ class ComplexFoundationTests: EquatableByReflectionTests {
         let a = NSString(string: "a")
         let b = a
         let c = NSString(string: "c")
-        let d = NSString(string: "<")
         
         assertEqual(a, b)
-        
         assertNotEqual(a, c)
-        assertNotEqual(a, d)
     }
     
     func testNSArraysOfNSStrings() {
