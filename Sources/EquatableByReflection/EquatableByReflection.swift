@@ -14,8 +14,8 @@ fileprivate func typesDiffer(_ lhs: Any, _ rhs: Any) -> Bool {
     type(of: lhs) != type(of: rhs)
 }
 
-fileprivate func hasChildren(_ candidate: Any) -> Bool {
-    mirror(of: candidate).hasChildren
+fileprivate func hasChildren(_ instance: Any) -> Bool {
+    mirror(of: instance).hasChildren
 }
 
 fileprivate func childrenAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
