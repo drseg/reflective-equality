@@ -15,19 +15,19 @@ fileprivate func typesDiffer(_ lhs: Any, _ rhs: Any) -> Bool {
 }
 
 fileprivate func hasProperties(_ candidate: Any) -> Bool {
-    !Mirror(reflecting: candidate).children.isEmpty
-}
-
-fileprivate func descriptionsAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
-    description(of: lhs) == description(of: rhs)
+    mirror(of: candidate).hasProperties
 }
 
 fileprivate func propertiesAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
     properties(of: lhs) == properties(of: rhs)
 }
 
+fileprivate func descriptionsAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
+    description(of: lhs) == description(of: rhs)
+}
+
 fileprivate func properties(of obj: Any) -> String {
-    let objProperties = Mirror(reflecting: obj)
+    let objProperties = mirror(of: obj)
         .children
         .map(\.value)
         .map(childProperties)
@@ -35,13 +35,17 @@ fileprivate func properties(of obj: Any) -> String {
     return description(of: objProperties)
 }
 
+fileprivate func mirror(of obj: Any) -> Mirror {
+    Mirror(reflecting: obj)
+}
+
 fileprivate func description(of obj: Any) -> String {
     String(describing: obj)
 }
 
-fileprivate func childProperties(of obj: Any) -> Any {    
+fileprivate func childProperties(of obj: Any) -> Any {
     var isClass: Bool {
-        Mirror(reflecting: obj).displayStyle == .class
+        mirror(of: obj).displayStyle == .class
     }
     
     return hasProperties(obj)
@@ -51,19 +55,29 @@ fileprivate func childProperties(of obj: Any) -> Any {
        : description(of: obj)
 }
 
-fileprivate func comparableClassDescription(of obj: Any) -> Any {
-    var isDescribedByValue: Bool {
-        description.first != "<"
-    }
-    
-    var className: Any {
-        description.split(separator: ":").first!.dropFirst()
-    }
-    
+fileprivate func comparableClassDescription(of obj: Any) -> Any {    
     let description = description(of: obj)
     
-    return isDescribedByValue
+    return description.isObjectValue
     ? description
-    : className
+    : description.className
+}
+
+fileprivate extension Mirror {
+    var hasProperties: Bool {
+        !children.isEmpty
+    }
+}
+
+fileprivate extension String {
+    var className: Any {
+        split(separator: ":")
+            .first!
+            .dropFirst()
+    }
+    
+    var isObjectValue: Bool {
+        first != "<"
+    }
 }
 
