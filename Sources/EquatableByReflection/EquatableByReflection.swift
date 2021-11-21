@@ -29,15 +29,15 @@ fileprivate func propertiesAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
     properties(of: lhs) == properties(of: rhs)
 }
 
-fileprivate func properties(of obj: Any) -> [String] {
+fileprivate func properties(of obj: Any) -> String {
     let properties = Mirror(reflecting: obj)
         .children
         .map(\.value)
         .map(childProperties)
     
     return properties.isEmpty
-    ? [String(describing: obj)]
-    : [String(describing: properties)]
+    ? String(describing: obj)
+    : String(describing: properties)
 }
 
 fileprivate func childProperties(of obj: Any) -> Any {
