@@ -3,6 +3,8 @@ import XCTest
 
 class EquatableByReflectionTests: XCTestCase {
     
+    var nsO: NSObject { NSObject() }
+    
     func assertEqual(_ lhs: Any, _ rhs: Any) {
         assert(lhs, rhs, assertion: XCTAssertTrue)
     }
@@ -78,8 +80,6 @@ class SimpleFoundationTests: EquatableByReflectionTests {
 }
 
 class ComplexFoundationTests: EquatableByReflectionTests {
-
-    var nsO: NSObject { NSObject() }
     
     func testArrayOfNSObject() {
         assertEqual([nsO], [nsO])
@@ -111,11 +111,11 @@ class ComplexFoundationTests: EquatableByReflectionTests {
     }
     
     func testNSArrays() {
-        let a = [1, 2, 3, 4, 5] as NSArray
+        let a = [1, 2, 3, 4, 5].ns
         let b = NSArray(array: a)
         let c = a + [6]
         
-        let aa = [a, a, a, a, a] as NSArray
+        let aa = [a, a, a, a, a].ns
         let bb = NSArray(array: aa)
         let cc = aa.adding(aa)
         
@@ -125,12 +125,13 @@ class ComplexFoundationTests: EquatableByReflectionTests {
         
         assertNotEqual(a, c)
         assertNotEqual(aa, cc)
+        assertNotEqual([1], [1].ns)
     }
     
     func testNSDictionaries() {
-        let a = ["1": 1] as NSDictionary
+        let a = ["1": 1].ns
         let b = NSDictionary(dictionary: a)
-        let c = ["2": 1] as NSDictionary
+        let c = ["2": 1].ns
         
         assertEqual(NSDictionary(), NSDictionary())
         assertEqual(a, b)
@@ -139,21 +140,21 @@ class ComplexFoundationTests: EquatableByReflectionTests {
     }
     
     func testNSStrings() {
-        let a = NSString(string: "a")
+        let a = "a".ns
         let b = a
-        let c = NSString(string: "c")
+        let c = "c".ns
         
         assertEqual(a, b)
         assertNotEqual(a, c)
     }
     
     func testNSArraysOfNSStrings() {
-        let s1 = NSString(string: "a")
-        let s2 = NSString(string: "a")
-        let s3 = NSString(string: "b")
-        let a1 = [s1, s3] as NSArray
-        let a2 = [s3, s1] as NSArray
-        let a3 = [s3, s2] as NSArray
+        let s1 = "a".ns
+        let s2 = "a".ns
+        let s3 = "b".ns
+        let a1 = [s1, s3].ns
+        let a2 = [s3, s1].ns
+        let a3 = [s3, s2].ns
         
         assertEqual(a1, a1)
         assertEqual(a2, a3)
@@ -162,9 +163,9 @@ class ComplexFoundationTests: EquatableByReflectionTests {
     }
     
     func testComplexTuples() {
-        let t1 = (NSObject(), NSString(string: "a"))
-        let t2 = (NSObject(), NSString(string: "a"))
-        let t3 = (NSObject(), NSString(string: "b"))
+        let t1 = (nsO, "a".ns)
+        let t2 = (nsO, "a".ns)
+        let t3 = (nsO, "b".ns)
             
         assertEqual(t1, t2)
         assertNotEqual(t1, t3)
@@ -202,9 +203,7 @@ class SimpleCompositionTests: EquatableByReflectionTests {
     }
     
     func testStructsWithSingleValue() {
-        struct OneField {
-            let field: Int
-        }
+        struct OneField { let field: Int }
         
         assertNotEqual(OneField(field: 1), OneField(field: 2))
         assertEqual(OneField(field: 1), OneField(field: 1))
@@ -325,16 +324,35 @@ class ComplexCompositionTests: EquatableByReflectionTests {
             let s: NSString
         }
         
-        assertEqual(StringHolder(s: NSString(string: "<")),
-                    StringHolder(s: NSString(string: "<")))
+        assertEqual(StringHolder(s: "<".ns),
+                    StringHolder(s: "<".ns))
         
-        assertNotEqual(StringHolder(s: NSString(string: "<1")),
-                       StringHolder(s: NSString(string: "<2")))
+        assertNotEqual(StringHolder(s: "<1".ns),
+                       StringHolder(s: "<2".ns))
     }
     
     func testEnumWithAssociatedNSObject() {
         enum ObjectCase { case ns(NSObject) }
         
-        assertEqual(ObjectCase.ns(NSObject()), ObjectCase.ns(NSObject()))
+        assertEqual(ObjectCase.ns(nsO),
+                    ObjectCase.ns(nsO))
+    }
+}
+
+extension String {
+    var ns: NSString {
+        NSString(string: self)
+    }
+}
+
+extension Array {
+    var ns: NSArray {
+        NSArray(array: self)
+    }
+}
+
+extension Dictionary {
+    var ns: NSDictionary {
+        NSDictionary(dictionary: self)
     }
 }
