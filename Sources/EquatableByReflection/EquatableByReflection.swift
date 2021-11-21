@@ -39,11 +39,9 @@ fileprivate func description(of obj: Any) -> String {
     String(describing: obj)
 }
 
-fileprivate func childProperties(of obj: Any) -> Any {
-    let mirror = Mirror(reflecting: obj)
-    
+fileprivate func childProperties(of obj: Any) -> Any {    
     var isClass: Bool {
-        mirror.displayStyle == .class
+        Mirror(reflecting: obj).displayStyle == .class
     }
     
     return hasProperties(obj)
@@ -54,18 +52,18 @@ fileprivate func childProperties(of obj: Any) -> Any {
 }
 
 fileprivate func comparableClassDescription(of obj: Any) -> Any {
-    func isDescribedByValue(_ description: String) -> Bool {
+    var isDescribedByValue: Bool {
         description.first != "<"
     }
     
-    func getClassName(_ description: String) -> Any {
+    var className: Any {
         description.split(separator: ":").first!.dropFirst()
     }
     
-    let description = String(describing: obj)
+    let description = description(of: obj)
     
-    return isDescribedByValue(description)
+    return isDescribedByValue
     ? description
-    : getClassName(description)
+    : className
 }
 
