@@ -27,12 +27,12 @@ fileprivate func descriptionsAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
 }
 
 fileprivate func properties(of obj: Any) -> String {
-    let objProperties = mirror(of: obj)
+    let properties = mirror(of: obj)
         .children
         .map(\.value)
         .map(childProperties)
 
-    return description(of: objProperties)
+    return description(of: properties)
 }
 
 fileprivate func mirror(of obj: Any) -> Mirror {
@@ -58,9 +58,9 @@ fileprivate func childProperties(of obj: Any) -> Any {
 fileprivate func comparableClassDescription(of obj: Any) -> Any {
     let description = description(of: obj)
     
-    return description.isObjectValue
-    ? description
-    : description.className
+    return description.isClassID
+    ? description.className
+    : description
 }
 
 fileprivate extension Mirror {
@@ -76,8 +76,8 @@ fileprivate extension String {
             .dropFirst()
     }
     
-    var isObjectValue: Bool {
-        first != "<"
+    var isClassID: Bool {
+        first == "<"
     }
 }
 
