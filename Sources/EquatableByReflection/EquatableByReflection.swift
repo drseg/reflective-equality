@@ -15,7 +15,11 @@ fileprivate func typesDiffer(_ lhs: Any, _ rhs: Any) -> Bool {
 }
 
 fileprivate func hasChildren(_ candidate: Any) -> Bool {
+<<<<<<< HEAD
     mirror(of: candidate).hasChildren
+=======
+    mirror(of: candidate).hasProperties
+>>>>>>> 0d7a382fba023010bbab7d427846ea2a967cd2a3
 }
 
 fileprivate func childrenAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
