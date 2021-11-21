@@ -83,12 +83,15 @@ class SimpleFoundationTests: EquatableByReflectionTests {
         let c2: () -> () = {            }
         let c3: () -> () = { print("c") }
         
-        let c4: () -> (String) = { "c"  }
+        let c4: () -> (String)      = { "c" }
+        let c5: (() -> (String))?   = { "c" }
         
         assertEqual(c1, c2)
         assertEqual(c1, c3)
+        assertEqual(c4, c5!) // c5 no longer wrapped
         
         assertNotEqual(c1, c4)
+        assertNotEqual(c4, c5 as Any) // c5 remains wrapped
     }
 }
 
