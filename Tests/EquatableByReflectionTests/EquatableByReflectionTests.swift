@@ -168,6 +168,15 @@ class ComplexFoundationTests: EquatableByReflectionTests {
         assertEqual(t1, t2)
         assertNotEqual(t1, t3)
     }
+    
+    func testNestedTuples() {
+        let t1 = (1, (1, 2))
+        let t2 = (1, (1, 2))
+        let t3 = (1, (1, 3))
+        
+        assertEqual(t1, t2)
+        assertNotEqual(t1, t3)
+    }
 }
 
 class SimpleCompositionTests: EquatableByReflectionTests {
