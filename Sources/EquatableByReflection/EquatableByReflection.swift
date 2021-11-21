@@ -5,20 +5,17 @@ func haveSameValue(_ lhs: Any, _ rhs: Any) -> Bool {
         return false
     }
     
-    if isEnumWithoutAssociatedValues(lhs) {
-        return descriptionsAreEqual(lhs, rhs)
-    }
-    
-    return propertiesAreEqual(lhs, rhs)
+    return hasProperties(lhs)
+    ? propertiesAreEqual(lhs, rhs)
+    : descriptionsAreEqual(lhs, rhs)
 }
 
 fileprivate func typesDiffer(_ lhs: Any, _ rhs: Any) -> Bool {
     type(of: lhs) != type(of: rhs)
 }
 
-fileprivate func isEnumWithoutAssociatedValues(_ candidate: Any) -> Bool {
-    let mirror = Mirror(reflecting: candidate)
-    return mirror.displayStyle == .enum && mirror.children.isEmpty
+fileprivate func hasProperties(_ candidate: Any) -> Bool {
+    !Mirror(reflecting: candidate).children.isEmpty
 }
 
 fileprivate func descriptionsAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
@@ -34,10 +31,8 @@ fileprivate func properties(of obj: Any) -> String {
         .children
         .map(\.value)
         .map(childProperties)
-    
-    return objProperties.isEmpty
-    ? description(of: obj)
-    : description(of: objProperties)
+
+    return description(of: objProperties)
 }
 
 fileprivate func description(of obj: Any) -> String {
@@ -51,11 +46,7 @@ fileprivate func childProperties(of obj: Any) -> Any {
         mirror.displayStyle == .class
     }
     
-    var hasChildren: Bool {
-        mirror.children.count != 0
-    }
-    
-    return hasChildren
+    return hasProperties(obj)
     ? properties(of: obj)
     : (isClass ? comparableClassDescription(of: obj) : obj)
 }
