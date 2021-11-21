@@ -77,6 +77,19 @@ class SimpleFoundationTests: EquatableByReflectionTests {
         assertEqual((1, 1), (1, 1))
         assertNotEqual((1, 2), (1, 1))
     }
+    
+    func testClosures() {
+        let c1: () -> () = {            }
+        let c2: () -> () = {            }
+        let c3: () -> () = { print("c") }
+        
+        let c4: () -> (String) = { "c"  }
+        
+        assertEqual(c1, c2)
+        assertEqual(c1, c3)
+        
+        assertNotEqual(c1, c4)
+    }
 }
 
 class ComplexFoundationTests: EquatableByReflectionTests {
@@ -333,6 +346,24 @@ class ComplexCompositionTests: EquatableByReflectionTests {
     
     func testNestedArraysWithComplexObjects() throws {
         throw XCTSkip()
+    }
+    
+    func testObjectsWithClosureProperties() throws {
+        class Closure {
+            let s: String
+            let c: () -> ()
+            init(_ s: String, _ c: @escaping () -> ()) {
+                self.s = s
+                self.c = c
+            }
+        }
+        
+        let c1 = Closure("a") { print("c1") }
+        let c2 = Closure("a") {             }
+        let c3 = Closure("b") {             }
+        
+        assertEqual(c1, c2)
+        assertNotEqual(c1, c3)
     }
     
     func testEnumWithAssociatedNSObject() {
