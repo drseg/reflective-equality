@@ -19,6 +19,15 @@ class EquatableByReflectionTests: XCTestCase {
 
 class SimpleFoundationTests: EquatableByReflectionTests {
     
+    func testCG() {
+        let a = CGFloat(0.1)
+        let b = CGFloat(0.1)
+        let c = CGFloat(0.2)
+        
+        assertEqual(a, b)
+        assertNotEqual(a, c)
+    }
+    
     func testEqualArrays() {
         assertEqual([], [])
         assertEqual([1], [1])
