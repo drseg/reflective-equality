@@ -6,10 +6,10 @@ func haveSameValue(_ lhs: Any, _ rhs: Any) -> Bool {
     }
     
     if isEnumWithoutAssociatedValues(lhs) {
-        return String(describing: lhs) == String(describing: rhs)
+        return descriptionsAreEqual(lhs, rhs)
     }
     
-    return properties(of: lhs) == properties(of: rhs)
+    return propertiesAreEqual(lhs, rhs)
 }
 
 fileprivate func typesDiffer(_ lhs: Any, _ rhs: Any) -> Bool {
@@ -19,6 +19,14 @@ fileprivate func typesDiffer(_ lhs: Any, _ rhs: Any) -> Bool {
 fileprivate func isEnumWithoutAssociatedValues(_ candidate: Any) -> Bool {
     let mirror = Mirror(reflecting: candidate)
     return mirror.displayStyle == .enum && mirror.children.isEmpty
+}
+
+fileprivate func descriptionsAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
+    String(describing: lhs) == String(describing: rhs)
+}
+
+fileprivate func propertiesAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
+    properties(of: lhs) == properties(of: rhs)
 }
 
 fileprivate func properties(of obj: Any) -> [String] {
