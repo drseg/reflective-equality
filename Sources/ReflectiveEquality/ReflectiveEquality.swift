@@ -1,24 +1,22 @@
 import Foundation
 
 public func haveSameValue(_ lhs: Any, _ rhs: Any) -> Bool {
-    if typesDiffer(lhs, rhs) {
-        return false
-    }
+    guard sameType(lhs, rhs) else { return false }
     
     return hasChildren(lhs)
-    ? childrenAreEqual(lhs, rhs)
+    ? childDescriptionsAreEqual(lhs, rhs)
     : descriptionsAreEqual(lhs, rhs)
 }
 
-fileprivate func typesDiffer(_ lhs: Any, _ rhs: Any) -> Bool {
-    type(of: lhs) != type(of: rhs)
+fileprivate func sameType(_ lhs: Any, _ rhs: Any) -> Bool {
+    type(of: lhs) == type(of: rhs)
 }
 
 fileprivate func hasChildren(_ instance: Any) -> Bool {
     mirror(of: instance).hasChildren
 }
 
-fileprivate func childrenAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
+fileprivate func childDescriptionsAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
     children(of: lhs) == children(of: rhs)
 }
 
@@ -43,14 +41,12 @@ fileprivate func description(of instance: Any) -> String {
 }
 
 fileprivate func subChildren(of instance: Any) -> Any {
-    return hasChildren(instance)
-        ? children(of: instance)
-        : mirror(of: instance).reflectsClass
-            ? comparableClassDescription(of: instance)
-            : description(of: instance)
+    hasChildren(instance)
+    ? children(of: instance)
+    : formattedDescription(of: instance)
 }
 
-fileprivate func comparableClassDescription(of instance: Any) -> Any {
+fileprivate func formattedDescription(of instance: Any) -> Any {
     let description = description(of: instance)
     
     return description.isClassID
@@ -59,9 +55,6 @@ fileprivate func comparableClassDescription(of instance: Any) -> Any {
 }
 
 fileprivate extension Mirror {
-    var reflectsClass: Bool {
-        displayStyle == .class
-    }
     
     var hasChildren: Bool {
         !children.isEmpty
@@ -73,6 +66,7 @@ fileprivate extension Mirror {
 }
 
 fileprivate extension String {
+    
     var className: Any {
         split(separator: ":")
             .first!
