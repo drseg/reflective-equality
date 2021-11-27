@@ -1,29 +1,37 @@
 import XCTest
 @testable import ReflectiveEquality
 
-class EquatableByReflectionTests: XCTestCase {
+class ReflectiveEqualityTests: XCTestCase {
     
     var nsO: NSObject { NSObject() }
     
     func assertEqual(_ lhs: Any, _ rhs: Any) {
-        assert(XCTAssertTrue, lhs, rhs)
+        assertEqual([lhs, rhs])
     }
     
     func assertNotEqual(_ lhs: Any, _ rhs: Any) {
-        assert(XCTAssertFalse, lhs, rhs)
+        assertNotEqual([lhs, rhs])
     }
     
-    func assert(_ assertion: (@autoclosure () throws -> Bool, @autoclosure () -> String, StaticString, UInt) -> (), _ lhs: Any, _ rhs: Any, file: StaticString = #file, line: UInt = #line) {
-        let errorMessage =
-        """
-        \nLHS: \(String(describing: lhs))
-        \nRHS: \(String(describing: rhs))
-        """
-        assertion(haveSameValue(lhs, rhs), errorMessage, file, line)
+    func assertEqual(_ args: [Any]) {
+        assert(XCTAssertTrue, args)
+    }
+    
+    func assertNotEqual(_ args: [Any]) {
+        assert(XCTAssertFalse, args)
+    }
+    
+    func assert(_ assertion: (@autoclosure () throws -> Bool, @autoclosure () -> String, StaticString, UInt) -> (), _ args: [Any], file: StaticString = #file, line: UInt = #line) {
+        
+        let errorMessage = args.enumerated().reduce(into: "") {
+            $0 += "\nArg \($1.offset + 1): \(String(describing: $1.element))"
+        }
+
+        assertion(haveSameValue(args), errorMessage, file, line)
     }
 }
 
-class SimpleFoundationTests: EquatableByReflectionTests {
+class SimpleFoundationTests: ReflectiveEqualityTests {
     
     func testCG() {
         let a = CGFloat(0.1)
@@ -95,7 +103,7 @@ class SimpleFoundationTests: EquatableByReflectionTests {
     }
 }
 
-class ComplexFoundationTests: EquatableByReflectionTests {
+class ComplexFoundationTests: ReflectiveEqualityTests {
     
     func testArrayOfNSObject() {
         assertEqual([nsO], [nsO])
@@ -197,7 +205,7 @@ class ComplexFoundationTests: EquatableByReflectionTests {
     }
 }
 
-class SimpleCompositionTests: EquatableByReflectionTests {
+class SimpleCompositionTests: ReflectiveEqualityTests {
     
     func testDifferentTypesNotEqual() {
         struct First {}
@@ -250,7 +258,7 @@ class SimpleCompositionTests: EquatableByReflectionTests {
     }
 }
 
-class ComplexCompositionTests: EquatableByReflectionTests {
+class ComplexCompositionTests: ReflectiveEqualityTests {
     
     func testStructWithNSObjectEqualByPropertyValue() {
         struct NSHolder {
@@ -351,7 +359,7 @@ class ComplexCompositionTests: EquatableByReflectionTests {
         throw XCTSkip()
     }
     
-    func testObjectsWithClosureProperties() throws {
+    func testObjectsWithClosureProperties() {
         class Closure {
             let s: String
             let c: () -> ()
@@ -374,6 +382,14 @@ class ComplexCompositionTests: EquatableByReflectionTests {
         
         assertEqual(ObjectCase.ns(nsO),
                     ObjectCase.ns(nsO))
+    }
+}
+
+class MultiArgTests: ReflectiveEqualityTests {
+       
+    func testMultipleArguments() {
+        assertEqual([1, 1, 1, 1])
+        assertNotEqual([1, 1, 1, 2])
     }
 }
 

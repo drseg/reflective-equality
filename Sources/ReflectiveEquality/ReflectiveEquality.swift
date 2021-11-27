@@ -1,5 +1,15 @@
 import Foundation
 
+public func haveSameValue(_ args: [Any]) -> Bool {
+    for (i, arg) in args[0..<args.count - 1].enumerated() {
+        guard haveSameValue(arg, args[i+1]) else {
+            return false
+        }
+    }
+    
+    return true
+}
+
 public func haveSameValue(_ lhs: Any, _ rhs: Any) -> Bool {
     guard sameType(lhs, rhs) else { return false }
     
