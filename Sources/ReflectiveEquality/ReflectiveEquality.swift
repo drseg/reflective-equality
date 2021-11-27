@@ -1,9 +1,7 @@
 import Foundation
 
 public func haveSameValue(_ args: [Any]) -> Bool {
-    args.dropLast()
-        .enumerated()
-        .allSatisfy { haveSameValue($1, args[$0+1]) }
+    args.allSatisfy { haveSameValue($0, args[0]) }
 }
 
 public func haveSameValue(_ lhs: Any, _ rhs: Any) -> Bool {
