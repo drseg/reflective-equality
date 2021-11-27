@@ -1,13 +1,9 @@
 import Foundation
 
 public func haveSameValue(_ args: [Any]) -> Bool {
-    for (i, arg) in args[0..<args.count - 1].enumerated() {
-        guard haveSameValue(arg, args[i+1]) else {
-            return false
-        }
-    }
-    
-    return true
+    args[0..<args.count - 1]
+        .enumerated()
+        .allSatisfy { haveSameValue($1, args[$0+1]) }
 }
 
 public func haveSameValue(_ lhs: Any, _ rhs: Any) -> Bool {
