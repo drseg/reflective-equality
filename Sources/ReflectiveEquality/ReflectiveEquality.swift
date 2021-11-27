@@ -31,11 +31,11 @@ fileprivate func equalByChildDescriptions(_ lhs: Any, _ rhs: Any) -> Bool {
 }
 
 fileprivate func equalByDescription(_ lhs: Any, _ rhs: Any) -> Bool {
-    description(of: lhs) == description(of: rhs)
+    formattedDescription(of: lhs) == formattedDescription(of: rhs)
 }
 
 fileprivate func childDescriptions(of instance: Any) -> String {
-    description(
+    formattedDescription(
         of: mirror(of: instance)
             .childValues
             .map(subChildDescriptions)
@@ -46,10 +46,6 @@ fileprivate func mirror(of instance: Any) -> Mirror {
     Mirror(reflecting: instance)
 }
 
-fileprivate func description(of instance: Any) -> String {
-    String(describing: instance)
-}
-
 fileprivate func subChildDescriptions(of instance: Any) -> String {
     hasChildren(instance)
     ? childDescriptions(of: instance)
@@ -57,7 +53,7 @@ fileprivate func subChildDescriptions(of instance: Any) -> String {
 }
 
 fileprivate func formattedDescription(of instance: Any) -> String {
-    let description = description(of: instance)
+    let description = String(describing: instance)
     
     return description.isClassID
     ? description.className
