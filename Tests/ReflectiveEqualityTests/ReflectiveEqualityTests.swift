@@ -1,5 +1,5 @@
 import XCTest
-@testable import EquatableByReflection
+@testable import ReflectiveEquality
 
 class EquatableByReflectionTests: XCTestCase {
     
