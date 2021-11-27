@@ -1,7 +1,7 @@
 import Foundation
 
 public func haveSameValue(_ args: [Any]) -> Bool {
-    args[0..<args.count - 1]
+    args.dropLast()
         .enumerated()
         .allSatisfy { haveSameValue($1, args[$0+1]) }
 }
@@ -79,4 +79,3 @@ fileprivate extension String {
         first == "<"
     }
 }
-

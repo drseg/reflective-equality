@@ -391,7 +391,9 @@ class MultiArgTests: ReflectiveEqualityTests {
         assertEqual([1])
         assertEqual([1, 1, 1, 1])
         assertEqual([nsO, nsO, nsO, nsO])
+        
         assertNotEqual([1, 1, 1, 2])
+        assertNotEqual([1, 1, nsO])
     }
 }
 
