@@ -5,26 +5,26 @@ class ReflectiveEqualityTests: XCTestCase {
     
     var nsO: NSObject { NSObject() }
     
-    func assertEqual(_ lhs: Any, _ rhs: Any) {
-        assertEqual([lhs, rhs])
+    func assertSameValue(_ lhs: Any, _ rhs: Any) {
+        assertSameValue([lhs, rhs])
     }
     
-    func assertNotEqual(_ lhs: Any, _ rhs: Any) {
-        assertNotEqual([lhs, rhs])
+    func assertNotSameValue(_ lhs: Any, _ rhs: Any) {
+        assertNotSameValue([lhs, rhs])
     }
     
-    func assertEqual(_ args: [Any]) {
+    func assertSameValue(_ args: [Any]) {
         assert(XCTAssertTrue, args)
     }
     
-    func assertNotEqual(_ args: [Any]) {
+    func assertNotSameValue(_ args: [Any]) {
         assert(XCTAssertFalse, args)
     }
     
     func assert(_ assertion: (@autoclosure () throws -> Bool, @autoclosure () -> String, StaticString, UInt) -> (), _ args: [Any], file: StaticString = #file, line: UInt = #line) {
         
-        let errorMessage = args.enumerated().reduce(into: "") {
-            $0 += "\nArg \($1.offset + 1): \(String(describing: $1.element))"
+        let errorMessage = args.enumerated().reduce("") {
+            $0 + "\nArg \($1.offset + 1): \(String(describing: $1.element))"
         }
 
         assertion(haveSameValue(args), errorMessage, file, line)
@@ -38,52 +38,52 @@ class SimpleFoundationTests: ReflectiveEqualityTests {
         let b = CGFloat(0.1)
         let c = CGFloat(0.2)
         
-        assertEqual(a, b)
-        assertNotEqual(a, c)
+        assertSameValue(a, b)
+        assertNotSameValue(a, c)
     }
     
     func testEqualArrays() {
-        assertEqual([], [])
-        assertEqual([1], [1])
-        assertEqual([1, 2], [1, 2])
-        assertEqual([[1, 2], [1, 2]], [[1, 2], [1, 2]])
+        assertSameValue([], [])
+        assertSameValue([1], [1])
+        assertSameValue([1, 2], [1, 2])
+        assertSameValue([[1, 2], [1, 2]], [[1, 2], [1, 2]])
     }
     
     func testNonEqualArrays() {
-        assertNotEqual([], [1])
-        assertNotEqual([1], [2])
-        assertNotEqual([1, 2], [1, 3])
-        assertNotEqual([[1, 2], [1, 2]], [[1, 2], [1, 3]])
+        assertNotSameValue([], [1])
+        assertNotSameValue([1], [2])
+        assertNotSameValue([1, 2], [1, 3])
+        assertNotSameValue([[1, 2], [1, 2]], [[1, 2], [1, 3]])
     }
     
     func testEqualDictionaries() {
-        assertEqual([:], [:])
-        assertEqual(["1": 1], ["1": 1])
-        assertEqual(["1": ["1": 1]], ["1": ["1": 1]])
+        assertSameValue([:], [:])
+        assertSameValue(["1": 1], ["1": 1])
+        assertSameValue(["1": ["1": 1]], ["1": ["1": 1]])
     }
     
     func testNonEqualDictionaries() {
-        assertNotEqual([:], ["1": 1])
-        assertNotEqual(["1": 1], ["1": 2])
-        assertNotEqual(["1": 1], ["2": 1])
+        assertNotSameValue([:], ["1": 1])
+        assertNotSameValue(["1": 1], ["1": 2])
+        assertNotSameValue(["1": 1], ["2": 1])
     }
 
     var none            :  Any { Optional<Int>.none     as Any }
     func some(_ i: Int) -> Any { Optional<Int>.some(i)  as Any }
     
     func testEqualOptionals() {
-        assertEqual(none, none)
-        assertEqual(some(1), some(1))
+        assertSameValue(none, none)
+        assertSameValue(some(1), some(1))
     }
     
     func testNonEqualOptionals() {
-        assertNotEqual(some(1), none)
-        assertNotEqual(some(1), some(2))
+        assertNotSameValue(some(1), none)
+        assertNotSameValue(some(1), some(2))
     }
     
     func testTuples() {
-        assertEqual((1, 1), (1, 1))
-        assertNotEqual((1, 2), (1, 1))
+        assertSameValue((1, 1), (1, 1))
+        assertNotSameValue((1, 2), (1, 1))
     }
     
     func testClosures() {
@@ -94,44 +94,53 @@ class SimpleFoundationTests: ReflectiveEqualityTests {
         let c4: () -> (String)      = { "c" }
         let c5: (() -> (String))?   = { "c" }
         
-        assertEqual(c1, c2)
-        assertEqual(c1, c3)
-        assertEqual(c4, c5!) // c5 no longer wrapped
+        assertSameValue(c1, c2)
+        assertSameValue(c1, c3)
+        assertSameValue(c4, c5!) // c5 no longer wrapped
         
-        assertNotEqual(c1, c4)
-        assertNotEqual(c4, c5 as Any) // c5 remains wrapped
+        assertNotSameValue(c1, c4)
+        assertNotSameValue(c4, c5 as Any) // c5 remains wrapped
+    }
+    
+    func testData() {
+        let d1 = "Cat".data(using: .utf8)!
+        let d2 = "Cat".data(using: .utf8)!
+        let d3 = "Bat".data(using: .utf8)!
+        
+        assertSameValue(d1, d2)
+        assertNotSameValue(d1, d3)
     }
 }
 
 class ComplexFoundationTests: ReflectiveEqualityTests {
     
     func testArrayOfNSObject() {
-        assertEqual([nsO], [nsO])
-        assertEqual([[nsO]], [[nsO]])
+        assertSameValue([nsO], [nsO])
+        assertSameValue([[nsO]], [[nsO]])
         
-        assertNotEqual([[nsO]], [[nsO, nsO]])
+        assertNotSameValue([[nsO]], [[nsO, nsO]])
     }
     
     func testDictionaryOfNSObject() {
-        assertEqual([nsO: 1], [nsO: 1])
-        assertEqual([nsO: nsO], [nsO: nsO])
+        assertSameValue([nsO: 1], [nsO: 1])
+        assertSameValue([nsO: nsO], [nsO: nsO])
         
-        assertNotEqual([nsO: [nsO]], [nsO: [nsO, nsO]])
-        assertNotEqual([nsO: 1], [nsO: 2])
+        assertNotSameValue([nsO: [nsO]], [nsO: [nsO, nsO]])
+        assertNotSameValue([nsO: 1], [nsO: 2])
     }
     
     func testPolymorphicCollections() {
         class A: NSObject {}
         class B: NSObject {}
         
-        assertEqual([A()], [A()])
-        assertNotEqual([A()], [B()])
+        assertSameValue([A()], [A()])
+        assertNotSameValue([A()], [B()])
         
-        assertEqual([A(): B()], [A(): B()])
-        assertEqual([B(): A()], [B(): A()])
+        assertSameValue([A(): B()], [A(): B()])
+        assertSameValue([B(): A()], [B(): A()])
         
-        assertNotEqual([B(): A()], [B(): B()])
-        assertNotEqual([A(): A()], [B(): A()])
+        assertNotSameValue([B(): A()], [B(): B()])
+        assertNotSameValue([A(): A()], [B(): A()])
     }
     
     func testNSArrays() {
@@ -143,13 +152,13 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
         let bb = NSArray(array: aa)
         let cc = aa.adding(aa)
         
-        assertEqual(NSArray(), NSArray())
-        assertEqual(a, b)
-        assertEqual(aa, bb)
+        assertSameValue(NSArray(), NSArray())
+        assertSameValue(a, b)
+        assertSameValue(aa, bb)
         
-        assertNotEqual(a, c)
-        assertNotEqual(aa, cc)
-        assertNotEqual([1], [1].ns)
+        assertNotSameValue(a, c)
+        assertNotSameValue(aa, cc)
+        assertNotSameValue([1], [1].ns)
     }
     
     func testNSDictionaries() {
@@ -157,10 +166,10 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
         let b = NSDictionary(dictionary: a)
         let c = ["2": 1].ns
         
-        assertEqual(NSDictionary(), NSDictionary())
-        assertEqual(a, b)
+        assertSameValue(NSDictionary(), NSDictionary())
+        assertSameValue(a, b)
         
-        assertNotEqual(a, c)
+        assertNotSameValue(a, c)
     }
     
     func testNSStrings() {
@@ -168,8 +177,8 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
         let b = a
         let c = "c".ns
         
-        assertEqual(a, b)
-        assertNotEqual(a, c)
+        assertSameValue(a, b)
+        assertNotSameValue(a, c)
     }
     
     func testNSArraysOfNSStrings() {
@@ -180,10 +189,10 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
         let a2 = [s3, s1].ns
         let a3 = [s3, s2].ns
         
-        assertEqual(a1, a1)
-        assertEqual(a2, a3)
+        assertSameValue(a1, a1)
+        assertSameValue(a2, a3)
         
-        assertNotEqual(a1, a2)
+        assertNotSameValue(a1, a2)
     }
     
     func testComplexTuples() {
@@ -191,8 +200,8 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
         let t2 = (nsO, "a".ns)
         let t3 = (nsO, "b".ns)
             
-        assertEqual(t1, t2)
-        assertNotEqual(t1, t3)
+        assertSameValue(t1, t2)
+        assertNotSameValue(t1, t3)
     }
     
     func testNestedTuples() {
@@ -200,8 +209,8 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
         let t2 = (1, (1, 2))
         let t3 = (1, (1, 3))
         
-        assertEqual(t1, t2)
-        assertNotEqual(t1, t3)
+        assertSameValue(t1, t2)
+        assertNotSameValue(t1, t3)
     }
 }
 
@@ -211,26 +220,26 @@ class SimpleCompositionTests: ReflectiveEqualityTests {
         struct First {}
         struct Second {}
         
-        assertNotEqual(First(), Second())
+        assertNotSameValue(First(), Second())
     }
     
     func testEmptyStructsEqual() {
         struct Null {}
         
-        assertEqual(Null(), Null())
+        assertSameValue(Null(), Null())
     }
     
     func testEmptyClassesEqual() {
         class Null {}
         
-        assertEqual(Null(), Null())
+        assertSameValue(Null(), Null())
     }
     
     func testStructsWithSingleValue() {
         struct OneField { let field: Int }
         
-        assertNotEqual(OneField(field: 1), OneField(field: 2))
-        assertEqual(OneField(field: 1), OneField(field: 1))
+        assertNotSameValue(OneField(field: 1), OneField(field: 2))
+        assertSameValue(OneField(field: 1), OneField(field: 1))
     }
     
     func testClassesWithSingleDifferentValue() {
@@ -239,22 +248,22 @@ class SimpleCompositionTests: ReflectiveEqualityTests {
             init(_ field: Int) { self.field = field }
         }
         
-        assertNotEqual(OneField(1), OneField(2))
-        assertEqual(OneField(1), OneField(1))
+        assertNotSameValue(OneField(1), OneField(2))
+        assertSameValue(OneField(1), OneField(1))
     }
     
     func testEnumCases() {
         enum Two { case first, second }
         
-        assertNotEqual(Two.first, Two.second)
-        assertEqual(Two.first, Two.first)
+        assertNotSameValue(Two.first, Two.second)
+        assertSameValue(Two.first, Two.first)
     }
     
     func testEnumAssociatedValues() {
         enum OneValue { case first(Int) }
         
-        assertEqual(OneValue.first(1), OneValue.first(1))
-        assertNotEqual(OneValue.first(1), OneValue.first(2))
+        assertSameValue(OneValue.first(1), OneValue.first(1))
+        assertNotSameValue(OneValue.first(1), OneValue.first(2))
     }
 }
 
@@ -265,7 +274,7 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
             let o = NSObject()
         }
         
-        assertEqual(NSHolder(), NSHolder())
+        assertSameValue(NSHolder(), NSHolder())
     }
     
     func testClassWithNSObjectEqualByPropertyValue() {
@@ -273,7 +282,7 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
             let o = NSObject()
         }
         
-        assertEqual(NSHolder(), NSHolder())
+        assertSameValue(NSHolder(), NSHolder())
     }
     
     func testStructWithNSObjectAndInt() {
@@ -282,8 +291,8 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
             let i: Int
         }
         
-        assertEqual(NSHolder(i: 1), NSHolder(i: 1))
-        assertNotEqual(NSHolder(i: 1), NSHolder(i: 2))
+        assertSameValue(NSHolder(i: 1), NSHolder(i: 1))
+        assertNotSameValue(NSHolder(i: 1), NSHolder(i: 2))
     }
     
     func testClassWithNSObjectAndInt() {
@@ -294,8 +303,8 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
             init(i: Int) { self.i = i }
         }
         
-        assertEqual(NSHolder(i: 1), NSHolder(i: 1))
-        assertNotEqual(NSHolder(i: 1), NSHolder(i: 2))
+        assertSameValue(NSHolder(i: 1), NSHolder(i: 1))
+        assertNotSameValue(NSHolder(i: 1), NSHolder(i: 2))
     }
 
     struct Nested {
@@ -319,8 +328,8 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
         let h2 = NSHolder(i: 1, n: Nested(i: 1))
         let h3 = NSHolder(i: 1, n: Nested(i: 2))
         
-        assertEqual(h1, h2)
-        assertNotEqual(h1, h3)
+        assertSameValue(h1, h2)
+        assertNotSameValue(h1, h3)
     }
     
     func testClassWithNestedStruct() {
@@ -339,8 +348,8 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
         let h2 = NSHolder(i: 1, n: Nested(i: 1))
         let h3 = NSHolder(i: 1, n: Nested(i: 2))
         
-        assertEqual(h1, h2)
-        assertNotEqual(h1, h3)
+        assertSameValue(h1, h2)
+        assertNotSameValue(h1, h3)
     }
     
     func testNestedNSString() {
@@ -348,10 +357,10 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
             let s: NSString
         }
         
-        assertEqual(StringHolder(s: "<".ns),
+        assertSameValue(StringHolder(s: "<".ns),
                     StringHolder(s: "<".ns))
         
-        assertNotEqual(StringHolder(s: "<1".ns),
+        assertNotSameValue(StringHolder(s: "<1".ns),
                        StringHolder(s: "<2".ns))
     }
     
@@ -373,14 +382,14 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
         let c2 = Closure("a") {             }
         let c3 = Closure("b") {             }
         
-        assertEqual(c1, c2)
-        assertNotEqual(c1, c3)
+        assertSameValue(c1, c2)
+        assertNotSameValue(c1, c3)
     }
     
     func testEnumWithAssociatedNSObject() {
         enum ObjectCase { case ns(NSObject) }
         
-        assertEqual(ObjectCase.ns(nsO),
+        assertSameValue(ObjectCase.ns(nsO),
                     ObjectCase.ns(nsO))
     }
 }
@@ -388,13 +397,13 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
 class MultiArgTests: ReflectiveEqualityTests {
        
     func testMultipleArguments() {
-        assertEqual([])
-        assertEqual([1])
-        assertEqual([1, 1, 1, 1])
-        assertEqual([nsO, nsO, nsO, nsO])
+        assertSameValue([])
+        assertSameValue([1])
+        assertSameValue([1, 1, 1, 1])
+        assertSameValue([nsO, nsO, nsO, nsO])
         
-        assertNotEqual([1, 1, 1, 2])
-        assertNotEqual([1, 1, nsO])
+        assertNotSameValue([1, 1, 1, 2])
+        assertNotSameValue([1, 1, nsO])
     }
 }
 
