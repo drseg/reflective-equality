@@ -388,8 +388,9 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
 class MultiArgTests: ReflectiveEqualityTests {
        
     func testMultipleArguments() {
-        assertEqual([nsO, nsO, nsO, nsO])
+        assertEqual([1])
         assertEqual([1, 1, 1, 1])
+        assertEqual([nsO, nsO, nsO, nsO])
         assertNotEqual([1, 1, 1, 2])
     }
 }
