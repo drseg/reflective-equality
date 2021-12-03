@@ -381,6 +381,25 @@ class MultiArgTests: ReflectiveEqualityTests {
     }
 }
 
+class ErrorHandlingTests: XCTestCase {
+    
+    func testEqualErrorConditions() {
+        XCTAssertEqual(generateEqualErrorMessage([]), "")
+        XCTAssertEqual(generateEqualErrorMessage([1]), "1 must equal itself")
+        XCTAssertEqual(generateEqualErrorMessage([1, 1]), "\nActual: 1\nExpected: 1")
+        XCTAssertEqual(generateEqualErrorMessage([1, 1, 1]), "\nArg 1: 1\nArg 2: 1\nArg 3: 1")
+    }
+    
+    func testNonEqualErrorConditions() {
+        let prefix = "All arguments were unexpectedly equal to "
+        
+        XCTAssertEqual(generateNonEqualErrorMessage([]), prefix + "empty")
+        XCTAssertEqual(generateNonEqualErrorMessage([1]), prefix + "1")
+        XCTAssertEqual(generateNonEqualErrorMessage([1, 1]), prefix + "1")
+        XCTAssertEqual(generateNonEqualErrorMessage([1, 1, 1]), prefix + "1")
+    }
+}
+
 extension String {
     var ns: NSString {
         NSString(string: self)
