@@ -22,17 +22,18 @@ final class StringDescribingTests: ReflectiveEqualityTests {
     }
     
     func test_someClassesAreDescribedByClassNameAndID() {
-        let object = String(describing: nsO)
+        let description = String(describing: nsO)
         
-        object.first! ==> "<"
-        object.last! ==> ">"
-        object.dropFirst().prefix(8) ==> "NSObject"
-        object.dropFirst(9).first! ==> ":"
-        object.dropFirst(10).first! ==> " "
+        description.first! ==> "<"
+        description.last! ==> ">"
+        description.dropFirst().prefix(8) ==> "NSObject"
+        description.dropFirst(9).first! ==> ":"
+        description.dropFirst(10).first! ==> " "
 
         #warning("Inconsistent IDE behaviour: returns 11 in Xcode and 14 in AppCode")
-        XCTAssertGreaterThanOrEqual(object.dropFirst(11).dropLast().count, 11)
-        XCTAssertLessThanOrEqual(object.dropFirst(11).dropLast().count, 14)
+        let addressLength = description.dropFirst(11).dropLast().count
+        XCTAssertGreaterThanOrEqual(addressLength, 11) // Xcode
+        XCTAssertLessThanOrEqual(addressLength, 14) // AppCode
     }
     
     func test_classesDescribedByNameAreNotFullyComparable() {
