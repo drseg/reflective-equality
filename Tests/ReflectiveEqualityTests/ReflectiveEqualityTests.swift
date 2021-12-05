@@ -346,12 +346,20 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
         
         class Child: Parent {}
         class GrandChild: Child {}
+        class Cousin: Parent {
+            let b: Int
+            init(_ a: Int, _ b: Int) { self.b = b; super.init(a) }
+        }
                 
         assertSameValue(Child(1), Child(1))
         assertNotSameValue(Child(1), Child(2))
 
         assertSameValue(GrandChild(1), GrandChild(1))
         assertNotSameValue(GrandChild(1), GrandChild(2))
+        
+        assertSameValue(Cousin(1, 1), Cousin(1, 1))
+        assertNotSameValue(Cousin(1, 1), Cousin(1, 2))
+        assertNotSameValue(Cousin(1, 1), Cousin(2, 1))
     }
     
     func testObjectsWithClosureProperties() {

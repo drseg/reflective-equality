@@ -56,14 +56,26 @@ fileprivate extension Mirror {
     
     var hasChildren: Bool {
         children.isEmpty
-        ? superclassMirror?.hasChildren ?? false
+        ? parentHasChildren
         : true
+    }
+
+    var parentHasChildren: Bool {
+        parent?.hasChildren ?? false
     }
     
     var childValues: [Any] {
         children.isEmpty
-        ? superclassMirror?.childValues ?? []
-        : children.map(\.value)
+        ? parentValues
+        : children.map(\.value) + parentValues
+    }
+    
+    var parentValues: [Any] {
+        parent?.childValues ?? []
+    }
+    
+    var parent: Mirror? {
+        return superclassMirror
     }
 }
 
