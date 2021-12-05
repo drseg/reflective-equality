@@ -18,18 +18,21 @@ final class StringDescribingTests: ReflectiveEqualityTests {
     }
     
     func test_descriptionsAreComparable() {
-        1 => String(describing: 1)
+        String(describing: 1) ==> String(describing: 1)
     }
     
     func test_someClassesAreDescribedByClassNameAndID() {
         let object = String(describing: nsO)
         
-        object.first! => "<"
-        object.last! => ">"
-        object.dropFirst().prefix(8) => "NSObject"
-        object.dropFirst(9).first! => ":"
-        object.dropFirst(10).first! => " "
-        object.dropFirst(11).dropLast().count => "11"
+        object.first! ==> "<"
+        object.last! ==> ">"
+        object.dropFirst().prefix(8) ==> "NSObject"
+        object.dropFirst(9).first! ==> ":"
+        object.dropFirst(10).first! ==> " "
+
+        #warning("Inconsistent IDE behaviour: returns 11 in Xcode and 14 in AppCode")
+        XCTAssertGreaterThanOrEqual(object.dropFirst(11).dropLast().count, 11)
+        XCTAssertLessThanOrEqual(object.dropFirst(11).dropLast().count, 14)
     }
     
     func test_classesDescribedByNameAreNotFullyComparable() {
@@ -37,16 +40,16 @@ final class StringDescribingTests: ReflectiveEqualityTests {
     }
     
     func test_classesDescribedByNameHaveComparableClassNames() {
-        String(describing: nsO).prefix(9).dropFirst() => String(describing: nsO).prefix(9).dropFirst()
-        String(describing: nsO).prefix(9).dropFirst() => "NSObject"
+        String(describing: nsO).prefix(9).dropFirst() ==> String(describing: nsO).prefix(9).dropFirst()
+        String(describing: nsO).prefix(9).dropFirst() ==> "NSObject"
     }
     
     func test_otherClassesAreDescribedByValue_AndAreComparable() {
         "Cat".ns => "Cat"
         CGFloat(1.1) => "1.1"
-    
-        "Cat".ns => String(describing: "Cat".ns)
-        "Cat".ns !=> String(describing: "Bat".ns)
+
+        String(describing: "Cat".ns) ==> String(describing: "Cat".ns)
+        String(describing: "Cat".ns) !==> String(describing: "Bat".ns)
     }
     
     func test_someClassValuesAreUnexpected_YetRemainComparable() {
@@ -61,12 +64,12 @@ final class StringDescribingTests: ReflectiveEqualityTests {
                         1 = 2;
                     }
                     """
-    
-        [1, 2].ns => String(describing: [1, 2].ns)
-        [1, 2].ns !=> String(describing: [1, 3].ns)
-        
-        [1: 2].ns => String(describing: [1: 2].ns)
-        [1: 2].ns !=> String(describing: [1: 3].ns)
+
+        String(describing: [1, 2].ns) ==> String(describing: [1, 2].ns)
+        String(describing: [1, 2].ns) !==> String(describing: [1, 3].ns)
+
+        String(describing: [1: 2].ns) ==> String(describing: [1: 2].ns)
+        String(describing: [1: 2].ns) !==> String(describing: [1: 3].ns)
     }
     
     func test_structsAreDescribedByNameAndValues_AndAreComparable() {
@@ -75,7 +78,7 @@ final class StringDescribingTests: ReflectiveEqualityTests {
         }
         
         Struct() => "Struct(a: 1, b: \"b\", c: [1, 2, 3, 4, 5])"
-        Struct() => String(describing: Struct())
+        String(describing: Struct()) ==> String(describing: Struct())
     }
     
     func test_customClassesAreOpaquelyDescribed_AndNotComparable() {
@@ -92,7 +95,7 @@ final class StringDescribingTests: ReflectiveEqualityTests {
         let c1 = CustomClass(1, "b", [1, 2, 3, 4, 5])
         let c2 = CustomClass(2, "c", [2, 3, 4, 5, 6])
         
-        c1 => String(describing: c2) // should not be equal
+        String(describing: c1) ==> String(describing: c2) // should not be equal
     }
     
     func test_customClassesDescribeTheirNamesAfterFinalDot() {
@@ -102,8 +105,8 @@ final class StringDescribingTests: ReflectiveEqualityTests {
             String(String(describing: instance).split(separator: ".").last!)
         }
         
-        XCTAssertEqual(className(First()), className(First()))
-        XCTAssertNotEqual(className(First()), className(Second()))
+        className(First()) ==> className(First())
+        className(First()) !==> className(Second())
     }
     
     func test_closuresAreNotDescribedOrComparable() {
@@ -111,7 +114,7 @@ final class StringDescribingTests: ReflectiveEqualityTests {
         let closure2: (Bool, Bool) -> (Bool) = { $0 && $1 }
         
         closure1 => "(Function)"
-        closure1 => String(describing: closure2)
+        String(describing: closure1) ==> String(describing: closure2)
     }
     
     func test_enumsAreDescribedByCaseName() {
@@ -132,12 +135,22 @@ final class StringDescribingTests: ReflectiveEqualityTests {
 final class MirrorTests: XCTestCase { }
 
 infix operator =>
+infix operator ==>
 infix operator !=>
+infix operator !==>
 
 func =><S: StringProtocol>(_ actual: Any, _ expected: S) {
     XCTAssertEqual(String(describing: actual), String(expected))
 }
 
+func ==><T: Equatable>(_ actual: T, expected: T) {
+    XCTAssertEqual(actual, expected)
+}
+
 func !=><S: StringProtocol>(_ actual: Any, _ expected: S) {
     XCTAssertNotEqual(String(describing: actual), String(expected))
+}
+
+func !==><T: Equatable>(_ actual: T, expected: T) {
+    XCTAssertNotEqual(actual, expected)
 }
