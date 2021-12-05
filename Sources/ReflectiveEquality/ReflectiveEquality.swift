@@ -4,19 +4,20 @@ public func haveSameValue(_ args: [Any]) -> Bool {
 
 public func haveSameValue(_ lhs: Any, _ rhs: Any) -> Bool {
     type(of: lhs) == type(of: rhs) &&
-    recursiveDescription(of: lhs) == recursiveDescription(of: rhs)
+    deepDescription(of: lhs) == deepDescription(of: rhs)
 }
 
-fileprivate func recursiveDescription(of instance: Any) -> String {
-    let childInstances = mirror(of: instance).childInstances
-    let instancesToDescribe = childInstances.isEmpty ? [instance] : childInstances
-    let descriptions = instancesToDescribe.map {
+fileprivate func deepDescription(of instance: Any) -> String {
+    instancesToDescribe(parent: instance).map {
         hasChildren($0)
-        ? recursiveDescription(of: $0)
-        : description(of: $0)
-    }
-    
-    return descriptions.joined()
+        ? deepDescription(of: $0)
+        : shallowDescription(of: $0)
+    }.joined()
+}
+
+fileprivate func instancesToDescribe(parent: Any) -> [Any] {
+    let childInstances = mirror(of: parent).childInstances
+    return childInstances.isEmpty ? [parent] : childInstances
 }
 
 fileprivate func hasChildren(_ instance: Any) -> Bool {
@@ -27,7 +28,7 @@ fileprivate func mirror(of instance: Any) -> Mirror {
     Mirror(reflecting: instance)
 }
 
-fileprivate func description(of instance: Any) -> String {
+fileprivate func shallowDescription(of instance: Any) -> String {
     let description = String(describing: instance)
     
     return description.isClassID
