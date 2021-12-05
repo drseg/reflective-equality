@@ -6,7 +6,7 @@ public func haveSameValue(_ lhs: Any, _ rhs: Any) -> Bool {
     guard sameType(lhs, rhs) else { return false }
     
     return hasChildren(lhs)
-    ? equalByChildDescriptions(lhs, rhs)
+    ? equalByRecursiveDescription(lhs, rhs)
     : equalByDescription(lhs, rhs)
 }
 
@@ -18,29 +18,28 @@ fileprivate func hasChildren(_ instance: Any) -> Bool {
     mirror(of: instance).hasChildren
 }
 
-fileprivate func equalByChildDescriptions(_ lhs: Any, _ rhs: Any) -> Bool {
-    childDescriptions(of: lhs) == childDescriptions(of: rhs)
+fileprivate func equalByRecursiveDescription(_ lhs: Any, _ rhs: Any) -> Bool {
+    recursiveDescription(of: lhs) == recursiveDescription(of: rhs)
 }
 
 fileprivate func equalByDescription(_ lhs: Any, _ rhs: Any) -> Bool {
     formattedDescription(of: lhs) == formattedDescription(of: rhs)
 }
 
-fileprivate func childDescriptions(of instance: Any) -> String {
-    formattedDescription(
-        of: mirror(of: instance)
-            .childValues
-            .map(subChildDescriptions)
-    )
+fileprivate func recursiveDescription(of instance: Any) -> String {
+    mirror(of: instance)
+        .childValues
+        .map(formattedRecursiveDescription)
+        .joined()
 }
 
 fileprivate func mirror(of instance: Any) -> Mirror {
     Mirror(reflecting: instance)
 }
 
-fileprivate func subChildDescriptions(of instance: Any) -> String {
+fileprivate func formattedRecursiveDescription(of instance: Any) -> String {
     hasChildren(instance)
-    ? childDescriptions(of: instance)
+    ? recursiveDescription(of: instance)
     : formattedDescription(of: instance)
 }
 
@@ -56,21 +55,21 @@ fileprivate extension Mirror {
     
     var hasChildren: Bool {
         children.isEmpty
-        ? parentHasChildren
+        ? superclassHasChildren
         : true
     }
 
-    var parentHasChildren: Bool {
+    var superclassHasChildren: Bool {
         superclass?.hasChildren ?? false
     }
     
     var childValues: [Any] {
         children.isEmpty
-        ? superclassValues
-        : children.map(\.value) + superclassValues
+        ? superclassChildValues
+        : children.map(\.value) + superclassChildValues
     }
     
-    var superclassValues: [Any] {
+    var superclassChildValues: [Any] {
         superclass?.childValues ?? []
     }
     
