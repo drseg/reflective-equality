@@ -383,7 +383,7 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
         enum ObjectCase { case ns(NSObject) }
         
         assertSameValue(ObjectCase.ns(nsO),
-                    ObjectCase.ns(nsO))
+                        ObjectCase.ns(nsO))
     }
 }
 

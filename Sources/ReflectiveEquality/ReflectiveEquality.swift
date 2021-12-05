@@ -3,47 +3,31 @@ public func haveSameValue(_ args: [Any]) -> Bool {
 }
 
 public func haveSameValue(_ lhs: Any, _ rhs: Any) -> Bool {
-    guard sameType(lhs, rhs) else { return false }
-    
-    return hasChildren(lhs)
-    ? equalByRecursiveDescription(lhs, rhs)
-    : equalByDescription(lhs, rhs)
+    type(of: lhs) == type(of: rhs) &&
+    recursiveDescription(of: lhs) == recursiveDescription(of: rhs)
 }
 
-fileprivate func sameType(_ lhs: Any, _ rhs: Any) -> Bool {
-    type(of: lhs) == type(of: rhs)
+fileprivate func recursiveDescription(of instance: Any) -> String {
+    let childInstances = mirror(of: instance).childInstances
+    let instancesToDescribe = childInstances.isEmpty ? [instance] : childInstances
+    let descriptions = instancesToDescribe.map {
+        hasChildren($0)
+        ? recursiveDescription(of: $0)
+        : description(of: $0)
+    }
+    
+    return descriptions.joined()
 }
 
 fileprivate func hasChildren(_ instance: Any) -> Bool {
     mirror(of: instance).hasChildren
 }
 
-fileprivate func equalByRecursiveDescription(_ lhs: Any, _ rhs: Any) -> Bool {
-    recursiveDescription(of: lhs) == recursiveDescription(of: rhs)
-}
-
-fileprivate func equalByDescription(_ lhs: Any, _ rhs: Any) -> Bool {
-    formattedDescription(of: lhs) == formattedDescription(of: rhs)
-}
-
-fileprivate func recursiveDescription(of instance: Any) -> String {
-    mirror(of: instance)
-        .childValues
-        .map(formattedRecursiveDescription)
-        .joined()
-}
-
 fileprivate func mirror(of instance: Any) -> Mirror {
     Mirror(reflecting: instance)
 }
 
-fileprivate func formattedRecursiveDescription(of instance: Any) -> String {
-    hasChildren(instance)
-    ? recursiveDescription(of: instance)
-    : formattedDescription(of: instance)
-}
-
-fileprivate func formattedDescription(of instance: Any) -> String {
+fileprivate func description(of instance: Any) -> String {
     let description = String(describing: instance)
     
     return description.isClassID
@@ -63,14 +47,14 @@ fileprivate extension Mirror {
         superclass?.hasChildren ?? false
     }
     
-    var childValues: [Any] {
+    var childInstances: [Any] {
         children.isEmpty
-        ? superclassChildValues
-        : children.map(\.value) + superclassChildValues
+        ? superclassChildInstances
+        : children.map(\.value) + superclassChildInstances
     }
     
-    var superclassChildValues: [Any] {
-        superclass?.childValues ?? []
+    var superclassChildInstances: [Any] {
+        superclass?.childInstances ?? []
     }
     
     var superclass: Mirror? {
