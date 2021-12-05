@@ -55,11 +55,15 @@ fileprivate func formattedDescription(of instance: Any) -> String {
 fileprivate extension Mirror {
     
     var hasChildren: Bool {
-        !children.isEmpty
+        children.isEmpty
+        ? superclassMirror?.hasChildren ?? false
+        : true
     }
     
     var childValues: [Any] {
-        children.map(\.value)
+        children.isEmpty
+        ? superclassMirror?.childValues ?? []
+        : children.map(\.value)
     }
 }
 

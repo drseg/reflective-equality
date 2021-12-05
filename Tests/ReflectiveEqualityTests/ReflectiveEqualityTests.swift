@@ -338,8 +338,20 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
                        StringHolder(s: "<2".ns))
     }
     
-    func testNestedArraysWithComplexObjects() throws {
-        throw XCTSkip()
+    func testInheritance() throws {
+        class Parent {
+            let a: Int
+            init(_ a: Int) { self.a = a }
+        }
+        
+        class Child: Parent {}
+        class GrandChild: Child {}
+                
+        assertSameValue(Child(1), Child(1))
+        assertNotSameValue(Child(1), Child(2))
+
+        assertSameValue(GrandChild(1), GrandChild(1))
+        assertNotSameValue(GrandChild(1), GrandChild(2))
     }
     
     func testObjectsWithClosureProperties() {
