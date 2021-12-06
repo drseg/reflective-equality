@@ -133,7 +133,23 @@ final class StringDescribingTests: ReflectiveEqualityTests {
     }
 }
 
-final class MirrorTests: XCTestCase { }
+final class MirrorTests: XCTestCase {
+
+    func test_inheritedPropertiesAreNotChildren() {
+        class A { let a = "a" }
+        class B: A { let b = "b"}
+
+        let mirrorA = Mirror(reflecting: A())
+        let mirrorB = Mirror(reflecting: B())
+
+        mirrorA.children.count ==> 1
+        mirrorB.children.count ==> 1
+
+        mirrorA.children.first!.value => "a"
+        mirrorB.children.first!.value => "b"
+        mirrorB.superclassMirror!.children.first!.value => "a"
+    }
+}
 
 infix operator =>
 infix operator ==>
