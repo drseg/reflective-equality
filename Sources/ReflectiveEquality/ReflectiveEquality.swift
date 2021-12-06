@@ -4,31 +4,26 @@ public func haveSameValue(_ args: [Any]) -> Bool {
 
 public func haveSameValue(_ lhs: Any, _ rhs: Any) -> Bool {
     type(of: lhs) == type(of: rhs) &&
-    deepDescription(of: lhs) == deepDescription(of: rhs)
+    deepDescription(lhs) == deepDescription(rhs)
 }
 
-fileprivate func deepDescription(of instance: Any) -> String {
+fileprivate func deepDescription(_ instance: Any) -> String {
     instancesToDescribe(parent: instance).map {
-        hasChildren($0)
-        ? deepDescription(of: $0)
-        : shallowDescription(of: $0)
+        mirror($0).hasChildren
+        ? deepDescription($0)
+        : shallowDescription($0)
     }.joined()
 }
 
 fileprivate func instancesToDescribe(parent: Any) -> [Any] {
-    let childInstances = mirror(of: parent).childInstances
-    return childInstances.isEmpty ? [parent] : childInstances
+    mirror(parent).childInstances ??? [parent]
 }
 
-fileprivate func hasChildren(_ instance: Any) -> Bool {
-    mirror(of: instance).hasChildren
-}
-
-fileprivate func mirror(of instance: Any) -> Mirror {
+fileprivate func mirror(_ instance: Any) -> Mirror {
     Mirror(reflecting: instance)
 }
 
-fileprivate func shallowDescription(of instance: Any) -> String {
+fileprivate func shallowDescription(_ instance: Any) -> String {
     let description = String(describing: instance)
     
     return description.isClassID
@@ -44,14 +39,14 @@ fileprivate extension Mirror {
         : true
     }
 
-    var superclassHasChildren: Bool {
-        superclass?.hasChildren ?? false
-    }
-    
     var childInstances: [Any] {
         children.isEmpty
         ? superclassChildInstances
         : children.map(\.value) + superclassChildInstances
+    }
+    
+    var superclassHasChildren: Bool {
+        superclass?.hasChildren ?? false
     }
     
     var superclassChildInstances: [Any] {
@@ -74,4 +69,10 @@ fileprivate extension String {
     var isClassID: Bool {
         first == "<"
     }
+}
+
+infix operator ???
+
+func ???(_ lhs: [Any]?, _ rhs: [Any]) -> [Any] {
+    (lhs?.isEmpty ?? true) ? rhs : lhs!
 }
