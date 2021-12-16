@@ -63,19 +63,21 @@ fileprivate extension Mirror {
 fileprivate extension String {
     
     var removingClassIDs: String {
-        removingAll(between: "0x", and: ">")
-            .removingAll(between: "0x", and: ",")
-            .removingAll(between: "(0x", and: ")")
+        removingAll(between: "0x", and: ")", " ", ",", ">")
     }
     
-    func removingAll(between start: String, and end: Character) -> String {
+    func removingAll(between start: String, and ends: Character...) -> String {
         var s = self
+        
         while let startRange = s.range(of: start) {
             let startIndex = startRange.lowerBound
-            
-            guard let endIndex = s[startIndex...].firstIndex(of: end) else {
-                return s
-            }
+            guard let endIndex = ends
+                    .compactMap({
+                        s[startIndex...].firstIndex(of: $0)
+                    })
+                    .sorted()
+                    .first
+            else { return s }
             
             s.replaceSubrange(startIndex...endIndex, with: "")
         }
