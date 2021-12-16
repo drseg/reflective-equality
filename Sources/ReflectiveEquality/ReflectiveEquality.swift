@@ -1,3 +1,5 @@
+import Foundation
+
 public func haveSameValue(_ args: [Any]) -> Bool {
     args.allSatisfy { haveSameValue($0, args[0]) }
 }
@@ -26,9 +28,9 @@ fileprivate func mirror(_ instance: Any) -> Mirror {
 fileprivate func shallowDescription(_ instance: Any) -> String {
     let description = String(describing: instance)
     
-    return description.isClassID
-    ? description.className
-    : description
+    return instance is Stringy
+    ? description
+    : description.removingClassIDs
 }
 
 fileprivate extension Mirror {
@@ -60,16 +62,25 @@ fileprivate extension Mirror {
 
 fileprivate extension String {
     
-    var className: String {
-        String(split(separator: ":")
-                .first!
-                .dropFirst())
-    }
-    
-    var isClassID: Bool {
-        first == "<"
+    var removingClassIDs: String {
+        var s = self
+        while let startIndex = s.firstIndex(of: "<") {
+            guard let midIndex = s[startIndex...].firstIndex(of: ":"),
+                  let endIndex = s[midIndex...].firstIndex(of: ">")
+            else { return s }
+            
+            s.replaceSubrange(startIndex...endIndex,
+                              with: s[startIndex..<midIndex])
+        }
+        return s
     }
 }
+
+fileprivate protocol Stringy {}
+
+extension String: Stringy {}
+extension Substring: Stringy {}
+extension NSString: Stringy {}
 
 infix operator ???
 

@@ -1,4 +1,5 @@
 import XCTest
+import Foundation
 @testable import ReflectiveEquality
 
 class ReflectiveEqualityTests: XCTestCase {
@@ -153,6 +154,56 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
         
         assertSameValue(a, b)
         assertNotSameValue(a, c)
+    }
+    
+    
+    func testNSAttributedStrings() {
+        let s1 = NSMutableAttributedString(string: "Cat")
+        let s2 = NSMutableAttributedString(string: "Cat")
+
+        assertSameValue(s1, s2)
+
+        s2.addAttribute(.foregroundColor,
+                        value: "",
+                        range: NSRange(location: 0, length: 2))
+
+        assertNotSameValue(s1, s2)
+
+        s1.addAttribute(.foregroundColor,
+                        value: "",
+                        range: NSRange(location: 0, length: 2))
+
+        assertSameValue(s1, s2)
+
+        s2.addAttribute(.font,
+                        value: NSObject(),
+                        range: NSRange(location: 0, length: 2))
+
+        assertNotSameValue(s1, s2)
+
+        s1.addAttribute(.font,
+                        value: NSObject(),
+                        range: NSRange(location: 0, length: 2))
+
+        assertSameValue(s1, s2)
+    }
+    
+    func testStringsNotAffectedByClassIDRemoval() {
+        let s1 = "<NSObject: XXXXXX>"
+        let s2 = "<NSObject: YYYYYY>"
+        assertNotSameValue(s1, s2)
+    }
+    
+    func testNSStringsNotAffectedByClassIDRemoval() {
+        let s1 = "<NSObject: XXXXXX>".ns
+        let s2 = "<NSObject: YYYYYY>".ns
+        assertNotSameValue(s1, s2)
+    }
+    
+    func testSubstringsNotAffectedByClassIDRemoval() {
+        let s1 = Substring("<NSObject: XXXXXX>")
+        let s2 = Substring("<NSObject: YYYYYY>")
+        assertNotSameValue(s1, s2)
     }
     
     func testNSArraysOfNSStrings() {

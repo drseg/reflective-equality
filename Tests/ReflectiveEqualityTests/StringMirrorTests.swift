@@ -149,6 +149,30 @@ final class MirrorTests: XCTestCase {
         mirrorB.children.first!.value => "b"
         mirrorB.superclassMirror!.children.first!.value => "a"
     }
+    
+    func test_NSAttributedStringAttributes_areNotChildren() {
+        let s1 = NSMutableAttributedString(string: "Cat")
+        s1.addAttribute(.font,
+                        value: NSObject(),
+                        range: NSRange(location: 0, length: 3))
+        let mirror1 = Mirror(reflecting: s1)
+        
+        mirror1.children.isEmpty ==> true
+        mirror1.superclassMirror?.children.isEmpty ==> true
+    }
+    
+    func test_accessControlModifiersAreIrrelevant() {
+        class A { private let a = "a" }
+        
+        Mirror(reflecting: A()).children.isEmpty ==> false
+    }
+    
+    func test_computedVarsAreNotChildren() {
+        class A { var a: String { "a" } }
+        
+        Mirror(reflecting: A()).children.isEmpty ==> true
+    }
+    
 }
 
 infix operator =>
