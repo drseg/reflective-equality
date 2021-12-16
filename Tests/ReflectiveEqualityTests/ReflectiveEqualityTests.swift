@@ -158,34 +158,25 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
     
     
     func testNSAttributedStrings() {
+        var parsingOptions: [NSAttributedString.DocumentReadingOptionKey : Any] {
+            [NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.html]
+        }
+        
+        var parsedHTML: NSAttributedString {
+            NSAttributedString(html: html.data(using: .utf8)!,
+                               options: parsingOptions,
+                               documentAttributes: nil)!
+        }
+        
         let s1 = NSMutableAttributedString(string: "Cat")
         let s2 = NSMutableAttributedString(string: "Cat")
-
-        assertSameValue(s1, s2)
-
-        s2.addAttribute(.foregroundColor,
-                        value: "",
-                        range: NSRange(location: 0, length: 2))
-
+        let range = NSRange(location: 0, length: 1)
+        
+        s1.addAttribute(.font, value: NSFont(name: "Helvetica", size: 10)!, range: range)
+        s2.addAttribute(.font, value: NSFont(name: "Helvetica", size: 11)!, range: range)
+        
+        assertSameValue(parsedHTML, parsedHTML)
         assertNotSameValue(s1, s2)
-
-        s1.addAttribute(.foregroundColor,
-                        value: "",
-                        range: NSRange(location: 0, length: 2))
-
-        assertSameValue(s1, s2)
-
-        s2.addAttribute(.font,
-                        value: NSObject(),
-                        range: NSRange(location: 0, length: 2))
-
-        assertNotSameValue(s1, s2)
-
-        s1.addAttribute(.font,
-                        value: NSObject(),
-                        range: NSRange(location: 0, length: 2))
-
-        assertSameValue(s1, s2)
     }
     
     func testStringsNotAffectedByClassIDRemoval() {
