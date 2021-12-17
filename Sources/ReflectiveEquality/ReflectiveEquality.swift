@@ -63,26 +63,12 @@ fileprivate extension Mirror {
 fileprivate extension String {
     
     var removingClassIDs: String {
-        removingAll(between: "0x", and: ")", " ", ",", ">")
-    }
-    
-    func removingAll(between start: String, and ends: Character...) -> String {
-        var s = self
+        let hexLength = NSObject().description.count - "<NSObject: 0x>".count
+        let regex = "[ (]0x[0-9a-f]{\(hexLength)}"
         
-        while let startRange = s.range(of: start) {
-            let startIndex = startRange.lowerBound
-            guard let endIndex = ends
-                    .compactMap({
-                        s[startIndex...].firstIndex(of: $0)
-                    })
-                    .sorted()
-                    .first
-            else { return s }
-            
-            s.replaceSubrange(startIndex...endIndex, with: "")
-        }
-        
-        return s
+        return replacingOccurrences(of: regex,
+                                    with: "",
+                                    options: .regularExpression)
     }
 }
 

@@ -30,10 +30,10 @@ final class StringDescribingTests: ReflectiveEqualityTests {
         description.dropFirst(9).first! ==> ":"
         description.dropFirst(10).first! ==> " "
 
-        #warning("Inconsistent IDE behaviour: returns 11 in Xcode and 14 in AppCode")
+        // address lengths are not always the same across different platforms
         let addressLength = description.dropFirst(11).dropLast().count
-        XCTAssertGreaterThanOrEqual(addressLength, 11) // Xcode
-        XCTAssertLessThanOrEqual(addressLength, 14) // AppCode
+        XCTAssertGreaterThanOrEqual(addressLength, 11)
+        XCTAssertLessThanOrEqual(addressLength, 14)
     }
     
     func test_classesDescribedByNameAreNotFullyComparable() {
@@ -158,7 +158,7 @@ final class MirrorTests: XCTestCase {
         let mirror1 = Mirror(reflecting: s1)
         
         mirror1.children.isEmpty ==> true
-        mirror1.superclassMirror?.children.isEmpty ==> true
+        mirror1.superclassMirror!.children.isEmpty ==> true
     }
     
     func test_accessControlModifiersAreIrrelevant() {
@@ -172,7 +172,6 @@ final class MirrorTests: XCTestCase {
         
         Mirror(reflecting: A()).children.isEmpty ==> true
     }
-    
 }
 
 infix operator =>

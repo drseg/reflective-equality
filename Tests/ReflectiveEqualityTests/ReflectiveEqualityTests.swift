@@ -188,22 +188,43 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
         assertSameValue(parsedHTML, parsedHTML)
     }
     
+    let classIDMatch1 = " 0x111111111"
+    let classIDMatch2 = " 0x000000000"
+    
     func testStringsNotAffectedByClassIDRemoval() {
-        let s1 = "<NSObject: XXXXXX>"
-        let s2 = "<NSObject: YYYYYY>"
-        assertNotSameValue(s1, s2)
+        assertNotSameValue(classIDMatch1, classIDMatch2)
     }
     
     func testNSStringsNotAffectedByClassIDRemoval() {
-        let s1 = "<NSObject: XXXXXX>".ns
-        let s2 = "<NSObject: YYYYYY>".ns
-        assertNotSameValue(s1, s2)
+        assertNotSameValue(classIDMatch1.ns, classIDMatch2.ns)
     }
     
     func testSubstringsNotAffectedByClassIDRemoval() {
-        let s1 = Substring("<NSObject: XXXXXX>")
-        let s2 = Substring("<NSObject: YYYYYY>")
+        let s1 = Substring(classIDMatch1)
+        let s2 = Substring(classIDMatch2)
         assertNotSameValue(s1, s2)
+    }
+    
+    func testNSAttributedStringContentNotAffectedByClassIDRemoval() throws {
+        XCTExpectFailure("This test cannot pass using public Swift APIs. It requires ObjC reflection, leading to private Swift and ObjC classes that Swift cannot interrogate")
+                
+        let s1 = NSMutableAttributedString(string: classIDMatch1)
+        let s2 = NSMutableAttributedString(string: classIDMatch2)
+        
+        let range = NSRange(location: 0, length: s1.length)
+        let font = NSFont(name: "Helvetica", size: 10)!
+        
+        s1.addAttribute(.font, value: font, range: range)
+        s2.addAttribute(.font, value: font, range: range)
+                
+        assertNotSameValue(s1, s2)
+    }
+    
+    func testNSFont() {
+        func font(_ size: CGFloat = 10) -> NSFont { NSFont(name: "Helvetica", size: size)! }
+        
+        assertSameValue(font(), font())
+        assertNotSameValue(font(), font(11))
     }
     
     func testNSArraysOfNSStrings() {
@@ -448,29 +469,6 @@ class MultiArgTests: ReflectiveEqualityTests {
         
         assertNotSameValue([1, 1, 1, 2])
         assertNotSameValue([1, 1, nsO])
-    }
-}
-
-class ErrorHandlingTests: XCTestCase {
-    
-    func testEqualErrorConditions() {
-        let error = generateEqualErrorMessage
-        
-        XCTAssertEqual(error([]), "")
-        XCTAssertEqual(error([1]), "1 must equal itself")
-        XCTAssertEqual(error([1, 1]), "\nActual: 1\nExpected: 1")
-        XCTAssertEqual(error([1, 1, 1]), "\nArg 1: 1\nArg 2: 1\nArg 3: 1")
-        XCTAssertEqual(error([1, 1, 1, 1]), "\nArg 1: 1\nArg 2: 1\nArg 3: 1\nArg 4: 1")
-    }
-    
-    func testNonEqualErrorConditions() {
-        let prefix = "All arguments were unexpectedly equal to "
-        let error = generateNonEqualErrorMessage
-        
-        XCTAssertEqual(error([]), prefix + "empty")
-        XCTAssertEqual(error([1]), prefix + "1")
-        XCTAssertEqual(error([1, 1]), prefix + "1")
-        XCTAssertEqual(error([1, 1, 1]), prefix + "1")
     }
 }
 
