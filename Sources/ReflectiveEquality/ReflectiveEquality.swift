@@ -18,7 +18,11 @@ fileprivate func deepDescription(_ instance: Any) -> String {
 }
 
 fileprivate func instancesToDescribe(parent: Any) -> [Any] {
-    mirror(parent).childInstances ??? [parent]
+    if let attributedString = parent as? NSAttributedString {
+        return [attributedString.string, attributedString]
+    }
+    
+    return mirror(parent).childInstances ??? [parent]
 }
 
 fileprivate func mirror(_ instance: Any) -> Mirror {

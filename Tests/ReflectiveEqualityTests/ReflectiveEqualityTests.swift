@@ -206,8 +206,6 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
     }
     
     func testNSAttributedStringContentNotAffectedByClassIDRemoval() throws {
-        XCTExpectFailure("This test cannot pass using public Swift APIs. It requires ObjC reflection, leading to private Swift and ObjC classes that Swift cannot interrogate")
-                
         let s1 = NSMutableAttributedString(string: classIDMatch1)
         let s2 = NSMutableAttributedString(string: classIDMatch2)
         
