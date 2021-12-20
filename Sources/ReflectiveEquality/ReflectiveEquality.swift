@@ -68,12 +68,17 @@ extension Mirror {
 extension String {
     
     var removingClassIDs: String {
-        let hexLength = NSObject().description.count - "<NSObject: 0x>".count
-        let regex = "[ =(]0x[0-9a-f]{\(hexLength)}"
-        
-        return replacingOccurrences(of: regex,
-                                    with: "",
-                                    options: .regularExpression)
+        removingMatches("[ =(]0x[0-9a-f]{\(hexLength)}")
+    }
+    
+    var hexLength: Int {
+        NSObject().description.count - "<NSObject: 0x>".count
+    }
+    
+    func removingMatches(_ regex: String) -> String {
+        replacingOccurrences(of: regex,
+                             with: "",
+                             options: .regularExpression)
     }
 }
 
