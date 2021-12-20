@@ -15,14 +15,14 @@ func deepDescription(_ instance: Any) -> String {
         mirror($0).hasChildren
         ? deepDescription($0)
         : shallowDescription($0)
-        + deepObjcDescription(parent: $0)
+        + deepObjcDescription($0)
     }.joined()
 }
 
-func deepObjcDescription(parent: Any) -> String {
-    guard let parent = parent as? NSObject else { return "" }
+func deepObjcDescription(_ instance: Any) -> String {
+    guard let instance = instance as? NSObject else { return "" }
     
-    return parent
+    return instance
         .propertyValues
         .map(shallowDescription)
         .joined()
