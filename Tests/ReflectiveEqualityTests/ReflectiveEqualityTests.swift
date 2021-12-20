@@ -371,9 +371,7 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
         let h1 = NSHolder(i: 1, n: Nested(i: 1))
         let h2 = NSHolder(i: 1, n: Nested(i: 1))
         let h3 = NSHolder(i: 1, n: Nested(i: 2))
-        
-        haveSameValue(h1, h2)
-        
+                
         assertSameValue(h1, h2)
         assertNotSameValue(h1, h3)
     }

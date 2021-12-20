@@ -10,7 +10,7 @@ public func haveSameValue(_ lhs: Any, _ rhs: Any) -> Bool {
     deepDescription(lhs) == deepDescription(rhs)
 }
 
-fileprivate func deepDescription(_ instance: Any) -> String {
+func deepDescription(_ instance: Any) -> String {
     swiftInstancesToDescribe(parent: instance).map {
         mirror($0).hasChildren
         ? deepDescription($0)
@@ -28,15 +28,15 @@ func deepObjcDescription(parent: Any) -> String {
         .joined()
 }
 
-fileprivate func swiftInstancesToDescribe(parent: Any) -> [Any] {
+func swiftInstancesToDescribe(parent: Any) -> [Any] {
     mirror(parent).childInstances ??? [parent]
 }
 
-fileprivate func mirror(_ instance: Any) -> Mirror {
+func mirror(_ instance: Any) -> Mirror {
     Mirror(reflecting: instance)
 }
 
-fileprivate func shallowDescription(_ instance: Any) -> String {
+func shallowDescription(_ instance: Any) -> String {
     let description = String(describing: instance)
     
     return instance is Stringy
@@ -44,7 +44,7 @@ fileprivate func shallowDescription(_ instance: Any) -> String {
     : description.removingClassIDs
 }
 
-fileprivate extension Mirror {
+extension Mirror {
     
     var hasChildren: Bool {
         children.isEmpty
@@ -65,7 +65,7 @@ fileprivate extension Mirror {
     }
 }
 
-fileprivate extension String {
+extension String {
     
     var removingClassIDs: String {
         let hexLength = NSObject().description.count - "<NSObject: 0x>".count
@@ -77,7 +77,7 @@ fileprivate extension String {
     }
 }
 
-fileprivate protocol Stringy {}
+protocol Stringy {}
 
 extension String: Stringy {}
 extension Substring: Stringy {}
