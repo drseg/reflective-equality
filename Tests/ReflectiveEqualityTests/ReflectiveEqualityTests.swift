@@ -130,7 +130,7 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
         assertSameValue(NSArray(), NSArray())
         assertSameValue(a, b)
         assertSameValue(aa, bb)
-        
+
         assertNotSameValue(a, c)
         assertNotSameValue(aa, cc)
         assertNotSameValue([1], [1].ns)
@@ -178,13 +178,13 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
         var parsingOptions: [NSAttributedString.DocumentReadingOptionKey : Any] {
             [NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.html]
         }
-        
+
         var parsedHTML: NSAttributedString {
             NSAttributedString(html: html.data(using: .utf8)!,
                                options: parsingOptions,
                                documentAttributes: nil)!
         }
-        
+
         assertSameValue(parsedHTML, parsedHTML)
     }
     
@@ -339,7 +339,7 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
         assertNotSameValue(NSHolder(i: 1), NSHolder(i: 2))
     }
     
-    func testClassWithNSObjectAndInt() {
+    func testClassWithNSObjectAndInt() throws {
         class NSHolder {
             let o = NSObject()
             let i: Int
@@ -356,7 +356,7 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
         let o = NSObject()
     }
     
-    func testStructWithNestedStruct() {
+    func testStructWithNestedStruct() throws {
         struct NSHolder {
             let o = NSObject()
             let i: Int
@@ -372,11 +372,13 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
         let h2 = NSHolder(i: 1, n: Nested(i: 1))
         let h3 = NSHolder(i: 1, n: Nested(i: 2))
         
+        haveSameValue(h1, h2)
+        
         assertSameValue(h1, h2)
         assertNotSameValue(h1, h3)
     }
     
-    func testClassWithNestedStruct() {
+    func testClassWithNestedStruct() throws {        
         class NSHolder {
             let o = NSObject()
             let i: Int

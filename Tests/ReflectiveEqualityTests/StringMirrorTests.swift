@@ -159,6 +159,7 @@ final class MirrorTests: XCTestCase {
         
         mirror1.children.isEmpty ==> true
         mirror1.superclassMirror!.children.isEmpty ==> true
+        mirror1.superclassMirror!.superclassMirror!.children.isEmpty ==> true
     }
     
     func test_accessControlModifiersAreIrrelevant() {

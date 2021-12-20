@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "ObjCReflection",
+        "repositoryURL": "https://github.com/drseg/ObjCReflection.git",
+        "state": {
+          "branch": "main",
+          "revision": "4bde133162a88b94ccb5ef7bf7467a712e2a120a",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,4 +1,5 @@
 import Foundation
+import ObjCReflection
 
 public func haveSameValue(_ args: [Any]) -> Bool {
     args.allSatisfy { haveSameValue($0, args[0]) }
@@ -10,19 +11,25 @@ public func haveSameValue(_ lhs: Any, _ rhs: Any) -> Bool {
 }
 
 fileprivate func deepDescription(_ instance: Any) -> String {
-    instancesToDescribe(parent: instance).map {
+    swiftInstancesToDescribe(parent: instance).map {
         mirror($0).hasChildren
         ? deepDescription($0)
         : shallowDescription($0)
+        + deepObjcDescription(parent: $0)
     }.joined()
 }
 
-fileprivate func instancesToDescribe(parent: Any) -> [Any] {
-    if let attributedString = parent as? NSAttributedString {
-        return [attributedString.string, attributedString]
-    }
+func deepObjcDescription(parent: Any) -> String {
+    guard let parent = parent as? NSObject else { return "" }
     
-    return mirror(parent).childInstances ??? [parent]
+    return parent
+        .propertyValues
+        .map(shallowDescription)
+        .joined()
+}
+
+fileprivate func swiftInstancesToDescribe(parent: Any) -> [Any] {
+    mirror(parent).childInstances ??? [parent]
 }
 
 fileprivate func mirror(_ instance: Any) -> Mirror {
@@ -45,22 +52,16 @@ fileprivate extension Mirror {
         : true
     }
 
-    var childInstances: [Any] {
-        children.isEmpty
-        ? superclassChildInstances
-        : children.map(\.value) + superclassChildInstances
+    var superclassHasChildren: Bool {
+        superclassMirror?.hasChildren ?? false
     }
     
-    var superclassHasChildren: Bool {
-        superclass?.hasChildren ?? false
+    var childInstances: [Any] {
+        children.map(\.value) + superclassChildInstances
     }
     
     var superclassChildInstances: [Any] {
-        superclass?.childInstances ?? []
-    }
-    
-    var superclass: Mirror? {
-        superclassMirror
+        superclassMirror?.childInstances ?? []
     }
 }
 
@@ -68,7 +69,7 @@ fileprivate extension String {
     
     var removingClassIDs: String {
         let hexLength = NSObject().description.count - "<NSObject: 0x>".count
-        let regex = "[ (]0x[0-9a-f]{\(hexLength)}"
+        let regex = "[ =(]0x[0-9a-f]{\(hexLength)}"
         
         return replacingOccurrences(of: regex,
                                     with: "",
