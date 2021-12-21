@@ -1,8 +1,8 @@
-#import "ExceptionCatcher.h"
+#import "Exceptions.h"
 
-@implementation _ExceptionCatcher
+@implementation Exceptions
 
-+ (BOOL)catchException:(void(^)())tryBlock error:(__autoreleasing NSError **)error {
++ (BOOL)intercept:(void(^)())tryBlock error:(__autoreleasing NSError **)error {
     @try {
         tryBlock();
         return YES;

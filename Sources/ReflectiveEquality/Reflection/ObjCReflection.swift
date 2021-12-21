@@ -1,9 +1,9 @@
 import Foundation
 import ExceptionCatcher
 
-public func suppressExceptions<T>(in block: @escaping () -> (T?)) -> T? {
+func suppressExceptions<T>(in block: @escaping () -> (T?)) -> T? {
     var result: T?
-    try? _ExceptionCatcher.catchException {
+    try? Exceptions.intercept {
         result = block()
     }
     return result
@@ -15,27 +15,27 @@ extension NSNumber: SwiftMirrorUnsafe {}
 
 extension NSObject {
     
-    public var propertiesAndIvars: [String: Any] {
+    var propertiesAndIvars: [String: Any] {
         ivars.merging(properties)
     }
 
-    public var ivars: [String: Any] {
+    var ivars: [String: Any] {
         valuesDictionary(forKeys: ivarPointersDictionary.keys)
     }
 
-    public var properties: [String: Any] {
+    var properties: [String: Any] {
         valuesDictionary(forKeys: propertyPointersDictionary.keys)
     }
     
-    public var propertyAndIvarValues: [Any] {
+    var propertyAndIvarValues: [Any] {
         propertyValues + ivarValues
     }
     
-    public var propertyValues: [Any] {
+    var propertyValues: [Any] {
         valuesArray(forKeys: propertyKeys)
     }
     
-    public var ivarValues: [Any] {
+    var ivarValues: [Any] {
         valuesArray(forKeys: ivarKeys)
     }
     
