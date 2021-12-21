@@ -29,13 +29,15 @@ final class ObjCReflectionTests: XCTestCase {
     }
     
     func testPropertyValues() {
-        XCTAssert(s.propertyValues.contains { $0 as? String == "cat" })
-        XCTAssertFalse(s.propertyValues.description.contains("Arial"))
+        let sut = s.propertyValues
+        XCTAssert(sut.contains { $0 as? String == "cat" })
+        XCTAssertFalse(sut.description.contains("Arial"))
     }
     
     func testIvarValues() {
-        XCTAssert(s.ivarValues.contains { $0 as? String == "cat" })
-        XCTAssertTrue(s.ivarValues.description.contains("Arial"))
+        let sut = s.ivarValues
+        XCTAssert(sut.contains { $0 as? String == "cat" })
+        XCTAssertTrue(sut.description.contains("Arial"))
     }
     
     func testPropertyAndIvarValues() {
