@@ -12,11 +12,6 @@ public class AbstractTestCase: XCTestCase {
     }
 
     public override func perform(_ run: XCTestRun) {
-        assert(
-            abstractTestPrefix.prefix(4) == "test",
-            "All test functions must begin with 'test'"
-        )
-        
         if isConcreteSubclass || testIsConcrete(run.test) {
             super.perform(run)
         }
