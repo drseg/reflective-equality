@@ -1,27 +1,32 @@
 import XCTest
 
+
 public class AbstractTestCase: XCTestCase {
-    
-    public override class var defaultTestSuite: XCTestSuite {
-        let defaultSuite = super.defaultTestSuite
-        let tests = defaultSuite.tests
-        
-        let abstractTests = tests.filter { $0.name.contains("testAbstractly") }
-        let concreteTests = tests.filter { !$0.name.contains("testAbstractly") }
-        
-        let newSuite = XCTestSuite(name: defaultSuite.name)
-        let type = Self.self
-        
-        if type != AbstractTestCase.self && type != abstractTestClass {
-            abstractTests.forEach(newSuite.addTest)
-        }
-        concreteTests.forEach(newSuite.addTest)
-        
-        return newSuite
+
+    public var abstractTestPrefix: String {
+        "testAbstractly"
     }
-    
-    public class var abstractTestClass: XCTest.Type {
+
+    public var abstractTestClass: XCTest.Type {
         fatalError("Subclasses must implement")
     }
-}
 
+    public override func perform(_ run: XCTestRun) {
+        assert(
+            abstractTestPrefix.prefix(4) == "test",
+            "All test functions must begin with 'test'"
+        )
+        
+        if isConcreteSubclass || testIsConcrete(run.test) {
+            super.perform(run)
+        }
+    }
+    
+    private var isConcreteSubclass: Bool {
+        Self.self != AbstractTestCase.self && Self.self != abstractTestClass
+    }
+    
+    private func testIsConcrete(_ test: XCTest) -> Bool {
+        !test.name.contains(abstractTestPrefix)
+    }
+}

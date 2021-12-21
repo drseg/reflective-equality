@@ -5,7 +5,7 @@ class AbstractTestCaseBaseTests: AbstractTestCase {
     
     var shouldFail = true
     
-    override class var abstractTestClass: XCTest.Type {
+    override var abstractTestClass: XCTest.Type {
         AbstractTestCaseBaseTests.self
     }
     
