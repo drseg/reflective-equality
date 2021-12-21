@@ -27,12 +27,6 @@ extension XCTestCase {
         try? test()
     }
     
-    public func ifSelfIsNot(_ abstractBaseClass: Any.Type, perform task: () -> ()) {
-        if type(of: self) != abstractBaseClass {
-            task()
-        }
-    }
-    
     public func performDeferred<Out>(_ action: (@escaping (Out) -> ()) -> (), completion: @escaping (Out) -> ()) {
         performDeferred { e in
             action() { result in
