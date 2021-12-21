@@ -48,7 +48,7 @@ final class ObjCReflectionTests: XCTestCase {
     }
     
     func testPropertyAndIvarValuesDoNotContainOptionals() {
-        XCTAssert(!s.propertyAndIvarValues.contains { $0 == nil })
+        XCTAssert(!s.propertyAndIvarValues.contains { $0 as Optional<Any> == nil })
     }
     
     func testPropertyAndIvarValuesForNSObjectBaseAreEmpty() {
