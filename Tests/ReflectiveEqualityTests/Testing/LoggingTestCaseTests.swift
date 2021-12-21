@@ -43,8 +43,10 @@ final class LoggingTestCaseTests: LoggingTestCase {
     }
     
     func testAssertLoggedFails() {
-        XCTExpectFailure()
-        assertLogged("test")
+        let message = "Expected an item number 1, but observed only 0 item(s)."
+        expectFailureMessage(containing: message) {
+            assertLogged("test")
+        }
     }
     
     let testSequence = ["test1", "test2"]
@@ -92,6 +94,6 @@ final class LoggingTestCaseTests: LoggingTestCase {
         "\n**End Log**\n"
         
         log("test")
-        XCTAssertEqual(formattedLog, expected)
+        XCTAssertEqual(log.formatted, expected)
     }
 }

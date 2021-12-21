@@ -49,61 +49,22 @@ open class LoggingTestCase: XCTestCase, TestLogger {
     }
     
     public func printLog() {
-        print(formattedLog)
-    }
-    
-    var formattedLog: String {
-        log.enumerated().reduce("\n**Start Log**\n") { partialResult, entry in
-            partialResult + "\(entry.offset), \(entry.element)"
-        } + "\n**End Log**\n"
+        print(log.formatted)
     }
 }
 
-extension XCTestCase {
+extension Array {
     
-    public func ifDifferentFrom(_ testClass: Any.Type, perform task: () -> ()) {
-        if type(of: self) != testClass {
-            task()
-        }
-    }
-    
-    public func performDeferred<Out>(_ action: (@escaping (Out) -> ()) -> (), completion: @escaping (Out) -> ()) {
-        performDeferred { e in
-            action() { result in
-                e.fulfill()
-                completion(result)
-            }
-        }
-    }
-    
-    public func performDeferred<In, Out>(_ action: (In, @escaping (Out) -> ()) -> (), arg: In, completion: @escaping (Out) -> ()) {
-        performDeferred { e in
-            action(arg) { result in
-                e.fulfill()
-                completion(result)
-            }
-        }
-    }
-    
-    public func performDeferred<In1, In2, Out>(_ action: (In1, In2, @escaping (Out) -> ()) -> (), arg1: In1, arg2: In2, completion: @escaping (Out) -> ()) {
-        performDeferred { e in
-            action(arg1, arg2) { result in
-                e.fulfill()
-                completion(result)
-            }
-        }
-    }
-    
-    public func performDeferred(_ action: (XCTestExpectation) -> ()) {
-        let e = XCTestExpectation()
-        action(e)
-        wait(for: [e], timeout: 0.1)
+    var formatted: String {
+        enumerated().reduce("\n**Start Log**\n") { partialResult, entry in
+            partialResult + "\(entry.offset), \(entry.element)"
+        } + "\n**End Log**\n"
     }
 }
 
 public extension String {
     
     var scrambled: String {
-        String(self.shuffled())
+        String(shuffled())
     }
 }
