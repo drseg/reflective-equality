@@ -1,5 +1,4 @@
 import Foundation
-import ObjCReflection
 
 public func haveSameValue(_ args: [Any]) -> Bool {
     args.allSatisfy { haveSameValue($0, args[0]) }
@@ -11,15 +10,15 @@ public func haveSameValue(_ lhs: Any, _ rhs: Any) -> Bool {
 }
 
 func deepDescription(_ instance: Any) -> String {
-    swiftInstancesToDescribe(parent: instance).map {
+    instancesToDescribe(parent: instance).map {
         mirror($0).hasChildren
         ? deepDescription($0)
         : shallowDescription($0)
-        + deepObjcDescription($0)
+        + shallowObjCDescription($0)
     }.joined()
 }
 
-func deepObjcDescription(_ instance: Any) -> String {
+func shallowObjCDescription(_ instance: Any) -> String {
     guard let instance = instance as? NSObject else { return "" }
     
     return instance
@@ -28,7 +27,7 @@ func deepObjcDescription(_ instance: Any) -> String {
         .joined()
 }
 
-func swiftInstancesToDescribe(parent: Any) -> [Any] {
+func instancesToDescribe(parent: Any) -> [Any] {
     mirror(parent).childInstances ??? [parent]
 }
 
