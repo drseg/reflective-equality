@@ -18,9 +18,9 @@ extension TestLogger {
     }
 }
 
-public protocol LoggingTestCase: TestLogger { }
+public protocol LoggingTestCase: TestLogger, XCTestCase { }
 
-extension LoggingTestCase where Self: XCTestCase {
+extension LoggingTestCase {
     
     public func assertLoggedNothing(file: StaticString = #file, line: UInt = #line) {
         assertLogLength(0)
