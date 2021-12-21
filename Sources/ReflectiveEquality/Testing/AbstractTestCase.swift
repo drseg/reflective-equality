@@ -1,9 +1,8 @@
 import XCTest
 
-
 public class AbstractTestCase: XCTestCase {
 
-    public var abstractTestPrefix: String {
+    public var abstractTestIdentifier: String {
         "testAbstractly"
     }
 
@@ -12,16 +11,20 @@ public class AbstractTestCase: XCTestCase {
     }
 
     public override func perform(_ run: XCTestRun) {
-        if isConcreteSubclass || testIsConcrete(run.test) {
+        if shouldRun(run.test) {
             super.perform(run)
         }
+    }
+    
+    private func shouldRun(_ test: XCTest) -> Bool {
+        isConcreteSubclass || isConcrete(test)
     }
     
     private var isConcreteSubclass: Bool {
         Self.self != AbstractTestCase.self && Self.self != abstractTestClass
     }
     
-    private func testIsConcrete(_ test: XCTest) -> Bool {
-        !test.name.contains(abstractTestPrefix)
+    private func isConcrete(_ test: XCTest) -> Bool {
+        !test.name.contains(abstractTestIdentifier)
     }
 }
