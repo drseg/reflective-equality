@@ -1,14 +1,13 @@
 import XCTest
 
-public protocol TestLogger {
+public protocol TestLogger: AnyObject {
 
+    var log: [Any] { get set }
     func log(_ observed: Any)
     func logSequence<C: Collection>(_ sequence: C)
 }
 
-open class LoggingTestCase: XCTestCase, TestLogger {
-    
-    public private (set) var log = [Any]()
+extension TestLogger {
     
     public func log(_ observed: Any) {
         log.append(observed)
@@ -17,6 +16,11 @@ open class LoggingTestCase: XCTestCase, TestLogger {
     public func logSequence<C: Collection>(_ c: C) {
         c.forEach(log)
     }
+}
+
+public protocol LoggingTestCase: TestLogger { }
+
+extension LoggingTestCase where Self: XCTestCase {
     
     public func assertLoggedNothing(file: StaticString = #file, line: UInt = #line) {
         assertLogLength(0)

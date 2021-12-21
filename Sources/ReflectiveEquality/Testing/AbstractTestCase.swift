@@ -12,7 +12,7 @@ public class AbstractTestCase: XCTestCase {
         let newSuite = XCTestSuite(name: defaultSuite.name)
         let type = Self.self
         
-        if type != AbstractTestCase.self && type != abstractBaseClass {
+        if type != AbstractTestCase.self && type != abstractTestClass {
             abstractTests.forEach(newSuite.addTest)
         }
         concreteTests.forEach(newSuite.addTest)
@@ -20,7 +20,7 @@ public class AbstractTestCase: XCTestCase {
         return newSuite
     }
     
-    public class var abstractBaseClass: Any.Type {
+    public class var abstractTestClass: XCTest.Type {
         fatalError("Subclasses must implement")
     }
 }

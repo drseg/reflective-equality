@@ -2,9 +2,10 @@ import XCTest
 @testable import ReflectiveEquality
 
 class AbstractTestCaseBaseTests: AbstractTestCase {
+    
     var shouldFail = true
     
-    public override class var abstractBaseClass: Any.Type {
+    override class var abstractTestClass: XCTest.Type {
         AbstractTestCaseBaseTests.self
     }
     

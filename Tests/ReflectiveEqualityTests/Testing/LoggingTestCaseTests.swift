@@ -1,7 +1,9 @@
 import XCTest
 @testable import ReflectiveEquality
 
-final class LoggingTestCaseTests: LoggingTestCase {
+final class LoggingTestCaseTests: XCTestCase, LoggingTestCase {
+    
+    var log: [Any] = []
     
     func testLog() {
         log("test")
