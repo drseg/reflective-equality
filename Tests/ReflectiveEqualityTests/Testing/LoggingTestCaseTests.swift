@@ -11,7 +11,7 @@ final class LoggingTestCaseTests: XCTestCase, LoggingTestCase {
     func testLog() {
         let expectedTrace = EventTrace(
             event: event,
-            function: "testLog()",
+            function: #function,
             fileName: file,
             line: #line + 3
         )
@@ -24,7 +24,7 @@ final class LoggingTestCaseTests: XCTestCase, LoggingTestCase {
     func testLogSequence() {
         let expectedTrace = EventTrace(
             event: event,
-            function: "testLogSequence()",
+            function: #function,
             fileName: file,
             line: #line + 3
         )

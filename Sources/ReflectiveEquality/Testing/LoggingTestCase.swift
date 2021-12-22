@@ -1,26 +1,60 @@
 import XCTest
 
-public protocol TestLogger: AnyObject {
+public protocol TestLogger {
 
     func logEvent(_ observed: Any, function: String, file: String, line: UInt)
     func logEventSequence<C: Collection>(_ sequence: C, function: String, file: String, line: UInt)
 }
 
-public protocol TestLoggerImplementation: TestLogger {
+public protocol LoggingTestCase: TestLogger, XCTestCase {
     
     var events: [EventTrace] { get set }
 }
 
-extension TestLoggerImplementation {
-    
-    public func logEvent(_ observed: Any, function: String = #function, file: String = #fileID, line: UInt = #line) {
+public extension LoggingTestCase {
+        
+    func logEvent(_ observed: Any, function: String = #function, file: String = #fileID, line: UInt = #line) {
         let fileName = String(file.split(separator: "/").last!)
         let trace = EventTrace(event: observed, function: function, fileName: fileName, line: line)
         events.append(trace)
     }
     
-    public func logEventSequence<C: Collection>(_ c: C, function: String = #function, file: String = #fileID, line: UInt = #line) {
+    func logEventSequence<C: Collection>(_ c: C, function: String = #function, file: String = #fileID, line: UInt = #line) {
         c.forEach { logEvent($0, function: function, file: file, line: line) }
+    }
+    
+    func assertNoEventsLogged(file: StaticString = #file, line: UInt = #line) {
+        assertLoggedEventCount(0)
+    }
+    
+    func assertLoggedEventCount(_ expected: Int, file: StaticString = #file, line: UInt = #line) {
+        XCTAssertEqual(events.count, expected, file: file, line: line)
+    }
+    
+    func assertLastLoggedEvent(_ expected: Any, file: StaticString = #file, line: UInt = #line) {
+        assertLoggedEvent(expected, atIndex: events.count - 1, file: file, line: line)
+    }
+    
+    func assertLoggedEvent(_ expected: Any, atIndex index: Int = 0, file: StaticString = #file, line: UInt = #line) {
+        guard index < events.count else {
+            XCTFail("Expected an item number \(index + 1), but observed only \(events.count) item(s).", file: file, line: line)
+            return
+        }
+        assertSameValue(events[index].event, expected, file: file, line: line)
+    }
+    
+    func assertLastLoggedEventSequence<C: Collection>(_ c: C, file: StaticString = #file, line: UInt = #line) {
+        assertLoggedEventSequence(c, startingAt: events.count - c.count, file: file, line: line)
+    }
+    
+    func assertLoggedEventSequence<C: Collection>(_ c: C, startingAt start: Int = 0, file: StaticString = #file, line: UInt = #line) {
+        for (index, entry) in c.enumerated() {
+            assertLoggedEvent(entry, atIndex: start + index, file: file, line: line)
+        }
+    }
+    
+    func printEventLog() {
+        print(events.formatted)
     }
 }
 
@@ -32,44 +66,6 @@ public struct EventTrace {
     let line: UInt
 }
 
-public protocol LoggingTestCase: TestLoggerImplementation, XCTestCase { }
-
-extension LoggingTestCase {
-    
-    public func assertNoEventsLogged(file: StaticString = #file, line: UInt = #line) {
-        assertLoggedEventCount(0)
-    }
-    
-    public func assertLoggedEventCount(_ expected: Int, file: StaticString = #file, line: UInt = #line) {
-        XCTAssertEqual(events.count, expected, file: file, line: line)
-    }
-    
-    public func assertLastLoggedEvent(_ expected: Any, file: StaticString = #file, line: UInt = #line) {
-        assertLoggedEvent(expected, atIndex: events.count - 1, file: file, line: line)
-    }
-    
-    public func assertLoggedEvent(_ expected: Any, atIndex index: Int = 0, file: StaticString = #file, line: UInt = #line) {
-        guard index < events.count else {
-            XCTFail("Expected an item number \(index + 1), but observed only \(events.count) item(s).", file: file, line: line)
-            return
-        }
-        assertSameValue(events[index].event, expected, file: file, line: line)
-    }
-    
-    public func assertLastLoggedEventSequence<C: Collection>(_ c: C, file: StaticString = #file, line: UInt = #line) {
-        assertLoggedEventSequence(c, startingAt: events.count - c.count, file: file, line: line)
-    }
-    
-    public func assertLoggedEventSequence<C: Collection>(_ c: C, startingAt start: Int = 0, file: StaticString = #file, line: UInt = #line) {
-        for (index, entry) in c.enumerated() {
-            assertLoggedEvent(entry, atIndex: start + index, file: file, line: line)
-        }
-    }
-    
-    public func printEventLog() {
-        print(events.formatted)
-    }
-}
 
 extension Array where Element == EventTrace {
     

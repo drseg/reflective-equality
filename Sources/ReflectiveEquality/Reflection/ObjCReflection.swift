@@ -1,7 +1,7 @@
 import Foundation
 import ExceptionCatcher
 
-func suppressExceptions<T>(in block: @escaping () -> (T?)) -> T? {
+public func suppressExceptions<T>(in block: @escaping () -> (T?)) -> T? {
     var result: T?
     try? Exceptions.intercept {
         result = block()
@@ -13,7 +13,7 @@ protocol SwiftMirrorUnsafe {}
 extension NSString: SwiftMirrorUnsafe {}
 extension NSNumber: SwiftMirrorUnsafe {}
 
-extension NSObject {
+public extension NSObject {
     
     var propertiesAndIvars: [String: Any] {
         ivars.merging(properties)
@@ -39,7 +39,7 @@ extension NSObject {
         valuesArray(forKeys: ivarKeys)
     }
     
-    func valuesDictionary<C: Collection>(forKeys keys: C) -> [String: Any] where C.Element == String {
+    internal func valuesDictionary<C: Collection>(forKeys keys: C) -> [String: Any] where C.Element == String {
         guard isMirrorSafe else { return ["": description] }
         
         return keys.reduce(into: [String: Any]()) { partialResult, key in
@@ -47,7 +47,7 @@ extension NSObject {
         }
     }
     
-    func valuesArray<C: Collection>(forKeys keys: C) -> [Any] where C.Element == String {
+    internal func valuesArray<C: Collection>(forKeys keys: C) -> [Any] where C.Element == String {
         guard isMirrorSafe else { return [description] }
         
         return keys.reduce([Any]()) { partialResult, key in
@@ -55,43 +55,43 @@ extension NSObject {
         }
     }
     
-    func safeValue(forKey key: String) -> Any? {
+    internal func safeValue(forKey key: String) -> Any? {
         suppressExceptions { self.value(forKey: key) }
     }
     
-    var isMirrorSafe: Bool {
+    internal var isMirrorSafe: Bool {
         !(self is SwiftMirrorUnsafe)
     }
     
-    var ivarKeys: [String] {
+    internal var ivarKeys: [String] {
         allKeys(getList: class_copyIvarList,
                 getName: ivar_getName)
     }
     
-    var propertyKeys: [String] {
+    internal var propertyKeys: [String] {
         allKeys(getList: class_copyPropertyList,
                 getName: property_getName)
     }
     
-    var ivarPointersDictionary: [String: Any] {
+    internal var ivarPointersDictionary: [String: Any] {
         deepPointerDictionary(getList: class_copyIvarList,
                               getName: ivar_getName,
                               getItem: class_getInstanceVariable)
     }
     
-    var propertyPointersDictionary: [String: Any] {
+    internal var propertyPointersDictionary: [String: Any] {
         deepPointerDictionary(getList: class_copyPropertyList,
                               getName: property_getName,
                               getItem: class_getProperty)
     }
     
-    func deepPointerDictionary<T>(type: AnyClass? = nil, getList: (AnyClass?, UnsafeMutablePointer<UInt32>?) -> UnsafeMutablePointer<T>?, getName: (T) -> UnsafePointer<CChar>?, getItem: (AnyClass?, UnsafePointer<CChar>) -> OpaquePointer?) -> [String: Any] {
+    internal func deepPointerDictionary<T>(type: AnyClass? = nil, getList: (AnyClass?, UnsafeMutablePointer<UInt32>?) -> UnsafeMutablePointer<T>?, getName: (T) -> UnsafePointer<CChar>?, getItem: (AnyClass?, UnsafePointer<CChar>) -> OpaquePointer?) -> [String: Any] {
         allKeys(getList: getList, getName: getName).reduce(into: [String: Any]()) { dictionary, key in
             dictionary[key] = getItem(type ?? Self.self, key)
         }
     }
     
-    func allKeys<T>(type: AnyClass? = nil, getList: (AnyClass?, UnsafeMutablePointer<UInt32>?) -> UnsafeMutablePointer<T>?, getName: (T) -> UnsafePointer<CChar>?) -> [String] {
+    internal func allKeys<T>(type: AnyClass? = nil, getList: (AnyClass?, UnsafeMutablePointer<UInt32>?) -> UnsafeMutablePointer<T>?, getName: (T) -> UnsafePointer<CChar>?) -> [String] {
         let type: AnyClass = type ?? Self.self
         
         let keys = keys(type: type,
@@ -105,7 +105,7 @@ extension NSObject {
         : keys
     }
     
-    func keys<T>(type: AnyClass, getList: (AnyClass?, UnsafeMutablePointer<UInt32>?) -> UnsafeMutablePointer<T>?, getName: (T) -> UnsafePointer<CChar>?) -> [String] {
+    internal func keys<T>(type: AnyClass, getList: (AnyClass?, UnsafeMutablePointer<UInt32>?) -> UnsafeMutablePointer<T>?, getName: (T) -> UnsafePointer<CChar>?) -> [String] {
         guard type != NSObject.self else { return [] }
         
         var count: CUnsignedInt = 0

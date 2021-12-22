@@ -1,16 +1,16 @@
 import XCTest
 
-public class AbstractTestCase: XCTestCase {
+open class AbstractTestCase: XCTestCase {
 
-    public var abstractTestIdentifier: String {
+    open var abstractTestIdentifier: String {
         "testAbstractly"
     }
 
-    public var abstractTestClass: XCTest.Type {
+    open var abstractTestClass: XCTest.Type {
         fatalError("Subclasses must implement")
     }
 
-    public override func perform(_ run: XCTestRun) {
+    open override func perform(_ run: XCTestRun) {
         if shouldRun(run.test) {
             super.perform(run)
         }
