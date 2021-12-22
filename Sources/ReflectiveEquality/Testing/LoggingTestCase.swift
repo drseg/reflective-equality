@@ -74,8 +74,6 @@ extension LoggingTestCase {
 extension Array where Element == EventTrace {
     
     var formatted: String {
-        let header = "| Index | Event | Function | File & Line |"
-        var columnWidths = [7, 7, 10, 13]
         
         func formatEntry(_ entry: EnumeratedSequence<Array<EventTrace>>.Element) -> String {
             let trace = entry.element
@@ -83,30 +81,32 @@ extension Array where Element == EventTrace {
             let index = " \(entry.offset) "
             let event = " \(trace.event) "
             let function = " \(trace.function) "
-            let fileNameAndLineNumber = " \(trace.fileName) (line \(trace.line)) "
+            let fileAndLine = " \(trace.fileName) (line \(trace.line)) "
             
-            columnWidths = longerOf(
-                columnWidths, [index,
-                               event,
-                               function,
-                               fileNameAndLineNumber]
+            columnWidths = max(columnWidths, [index,
+                                              event,
+                                              function,
+                                              fileAndLine]
             )
             
-            return "|\(index)|\(event)|\(function)|\(fileNameAndLineNumber)|"
+            return "|\(index)|\(event)|\(function)|\(fileAndLine)|"
         }
         
         func padColumns(_ s: String) -> String {
-            let columnDivider = "|"
-            
-            return s
-                .split(separator: Character(columnDivider))
+            s.split(separator: Character(divider))
                 .enumerated()
                 .reduce(into: "")
-            { partialResult, column in
-                let padCount = columnWidths[column.offset] - column.element.count
-                partialResult += columnDivider + column.element.rightPadded(padCount)
-            } + columnDivider
+            { result, column in
+                let padCount = columnWidths[column.0] - column.1.count
+                result += divider + column.1.rightPadded(padCount)
+            } + divider
         }
+        
+        let header = "| Index | Event | Function | File & Line |"
+        let divider = "|"
+        var columnWidths = header
+            .split(separator: Character(divider))
+            .map(\.count)
         
         let formattedEntries = [header] + enumerated().map(formatEntry)
         let paddedEntries = formattedEntries
@@ -116,13 +116,13 @@ extension Array where Element == EventTrace {
         return "\n**Start Log**\n\n" + paddedEntries + "\n\n**End Log**\n"
     }
 
-    private func longerOf(_ a: [Int], _ b: [String]) -> [Int] {
+    private func max(_ a: [Int], _ b: [String]) -> [Int] {
         a.enumerated().map {
-            longerOf($0.element, b[$0.offset])
+            max($0.element, b[$0.offset])
         }
     }
     
-    private func longerOf(_ a: Int, _ b: String) -> Int {
+    private func max(_ a: Int, _ b: String) -> Int {
         a > b.count ? a : b.count
     }
 }
