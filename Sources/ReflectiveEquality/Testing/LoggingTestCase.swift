@@ -134,10 +134,6 @@ extension StringProtocol {
     }
     
     func rightPadded(_ count: Int) -> String {
-        var s = String(self)
-        for _ in 0..<count {
-            s.append(" ")
-        }
-        return s
+        self + String(repeating: " ", count: count)
     }
 }
