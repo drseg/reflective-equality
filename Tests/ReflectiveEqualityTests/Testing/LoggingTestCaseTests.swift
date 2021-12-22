@@ -3,99 +3,135 @@ import XCTest
 
 final class LoggingTestCaseTests: XCTestCase, LoggingTestCase {
     
-    var log: [Any] = []
+    var events: [EventTrace] = []
+    
+    let file = "LoggingTestCaseTests.swift"
+    let event = "test".scrambled
     
     func testLog() {
-        log("test")
-        XCTAssertEqual(log.count, 1)
-        assertSameValue(log.first!, "test")
+        let expectedTrace = EventTrace(
+            event: event,
+            function: "testLog()",
+            fileName: file,
+            line: #line + 3
+        )
+        
+        logEvent(event)
+        XCTAssertEqual(events.count, 1)
+        assertSameValue(events.first!, expectedTrace)
     }
     
     func testLogSequence() {
-        logSequence(["test"])
-        XCTAssertEqual(log.count, 1)
-        assertSameValue(log.first!, "test")
+        let expectedTrace = EventTrace(
+            event: event,
+            function: "testLogSequence()",
+            fileName: file,
+            line: #line + 3
+        )
+        
+        logEventSequence([event])
+        XCTAssertEqual(events.count, 1)
+        assertSameValue(events.first!, expectedTrace)
     }
     
     func testAssertLoggedNothingPasses() {
-        assertLoggedNothing()
+        assertNoEventsLogged()
     }
     
     func testAssertLoggedNothingFails() {
         XCTExpectFailure()
-        log("test")
-        assertLoggedNothing()
+        logEvent(event)
+        assertNoEventsLogged()
     }
     
     func testAssertLogLengthPasses() {
-        assertLogLength(0)
-        log("test")
-        assertLogLength(1)
+        assertLoggedEventCount(0)
+        logEvent(event)
+        assertLoggedEventCount(1)
     }
     
     func testAssertLogLengthFails() {
         XCTExpectFailure()
-        log("test")
-        assertLogLength(0)
+        logEvent(event)
+        assertLoggedEventCount(0)
     }
     
     func testAssertLoggedPasses() {
-        log("test")
-        assertLogged("test")
+        logEvent(event)
+        assertLoggedEvent(event)
     }
     
     func testAssertLoggedFails() {
         let message = "Expected an item number 1, but observed only 0 item(s)."
-        expectFailureMessage(containing: message) {
-            assertLogged("test")
+        expectFailureMessage(toContain: message) {
+            assertLoggedEvent(event)
         }
     }
     
-    let testSequence = ["test1", "test2"]
+    let eventSequence = ["test1", "test2"]
     
     func testAssertLoggedSequencePasses() {
-        logSequence(testSequence)
-        assertLoggedSequence(testSequence)
+        logEventSequence(eventSequence)
+        assertLoggedEventSequence(eventSequence)
     }
     
     func testAssertLoggedSequenceFails() {
         XCTExpectFailure()
-        assertLoggedSequence(testSequence)
-        logSequence(testSequence)
-        assertLoggedSequence(testSequence, startingAt: 1)
+        assertLoggedEventSequence(eventSequence)
+        logEventSequence(eventSequence)
+        assertLoggedEventSequence(eventSequence, startingAt: 1)
     }
     
     func testAssertLoggedLastPasses() {
-        logSequence(testSequence)
-        assertLoggedLast("test2")
+        logEventSequence(eventSequence)
+        assertLastLoggedEvent("test2")
     }
     
     func testAssertLoggedLastFails() {
         XCTExpectFailure()
-        logSequence(testSequence)
-        assertLoggedLast("test1")
+        logEventSequence(eventSequence)
+        assertLastLoggedEvent("test1")
     }
     
     func testAssertLoggedLastSequencePasses() {
-        log("test")
-        logSequence(testSequence)
-        assertLoggedLastSequence(testSequence)
+        logEvent(event)
+        logEventSequence(eventSequence)
+        assertLastLoggedEventSequence(eventSequence)
     }
     
     func testAssertLoggedLastSequenceFails() {
         XCTExpectFailure()
-        log("test")
-        logSequence(testSequence)
-        assertLoggedLastSequence(["test", "test1"])
+        logEvent(event)
+        logEventSequence(eventSequence)
+        assertLastLoggedEventSequence([event, "test1"])
     }
     
-    func testLogFormatter() {
+    let startLog = "\n**Start Log**\n\n"
+    let endLog = "\n**End Log**\n"
+    
+    func testLogFormatter() throws {
         let expected =
-        "\n**Start Log**\n" +
-        "0, test" +
-        "\n**End Log**\n"
+        startLog +
+        "| 0 | \(event) | testLogFormatter() | \(file) at line \(#line + 4) |\n" +
+        "| 1 | \(event) | testLogFormatter() | \(file) at line \(#line + 4) |\n" +
+        endLog
         
-        log("test")
-        XCTAssertEqual(log.formatted, expected)
+        logEvent(event)
+        logEvent(event)
+
+        XCTAssertEqual(events.formatted, expected)
+    }
+    
+    func testLogFormatterWithUnequalColumns() throws {
+        let expected =
+        startLog +
+        "| 0 | event      | testLogFormatterWithUnequalColumns() | \(file) at line \(#line + 4) |\n" +
+        "| 1 | eventevent | testLogFormatterWithUnequalColumns() | \(file) at line \(#line + 4) |\n" +
+        endLog
+        
+        logEvent("event")
+        logEvent("eventevent")
+
+        XCTAssertEqual(events.formatted, expected)
     }
 }

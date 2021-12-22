@@ -22,7 +22,7 @@ extension XCTestCase {
         assertion(haveSameValue(args), message, file, line)
     }
     
-    public func expectFailureMessage(containing message: String, whenRunning test: () throws -> ()) {
+    public func expectFailureMessage(toContain message: String, whenRunning test: () throws -> ()) {
         XCTExpectFailure { $0.description.contains(message) }
         try? test()
     }
