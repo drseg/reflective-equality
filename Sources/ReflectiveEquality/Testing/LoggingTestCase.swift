@@ -74,7 +74,8 @@ extension LoggingTestCase {
 extension Array where Element == EventTrace {
     
     var formatted: String {
-        var columnWidths = [0, 0, 0, 0]
+        let header = "| Index | Event | Function | File & Line |"
+        var columnWidths = [7, 7, 10, 13]
         
         func formatEntry(_ entry: EnumeratedSequence<Array<EventTrace>>.Element) -> String {
             let trace = entry.element
@@ -82,7 +83,7 @@ extension Array where Element == EventTrace {
             let index = " \(entry.offset) "
             let event = " \(trace.event) "
             let function = " \(trace.function) "
-            let fileNameAndLineNumber = " \(trace.fileName) at line \(trace.line) "
+            let fileNameAndLineNumber = " \(trace.fileName) (line \(trace.line)) "
             
             columnWidths = longerOf(
                 columnWidths, [index,
@@ -107,8 +108,8 @@ extension Array where Element == EventTrace {
             } + columnDivider
         }
         
-        let paddedEntries = enumerated()
-            .map(formatEntry)
+        let formattedEntries = [header] + enumerated().map(formatEntry)
+        let paddedEntries = formattedEntries
             .map(padColumns)
             .joined(separator: "\n")
         

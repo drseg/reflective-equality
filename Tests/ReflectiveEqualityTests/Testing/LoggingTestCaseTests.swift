@@ -109,29 +109,46 @@ final class LoggingTestCaseTests: XCTestCase, LoggingTestCase {
     let startLog = "\n**Start Log**\n\n"
     let endLog = "\n**End Log**\n"
     
+    func withStartEndTags(_ s: String) -> String {
+        return startLog + s + endLog
+    }
+    
     func testLogFormatter() throws {
         let expected =
-        startLog +
-        "| 0 | \(event) | testLogFormatter() | \(file) at line \(#line + 4) |\n" +
-        "| 1 | \(event) | testLogFormatter() | \(file) at line \(#line + 4) |\n" +
-        endLog
-        
-        logEvent(event)
-        logEvent(event)
+"""
 
+| Index | Event | Function           | File & Line                           |
+| 0     | event | testLogFormatter() | \(file + "" + "") (line \(#line + 5)) |
+| 1     | event | testLogFormatter() | \(file + "" + "") (line \(#line + 5)) |
+
+""".withStartEndTags
+        
+        logEvent("event")
+        logEvent("event")
+        
         XCTAssertEqual(events.formatted, expected)
     }
     
     func testLogFormatterWithUnequalColumns() throws {
         let expected =
-        startLog +
-        "| 0 | event      | testLogFormatterWithUnequalColumns() | \(file) at line \(#line + 4) |\n" +
-        "| 1 | eventevent | testLogFormatterWithUnequalColumns() | \(file) at line \(#line + 4) |\n" +
-        endLog
+"""
+
+| Index | Event      | Function                             | File & Line                           |
+| 0     | event      | testLogFormatterWithUnequalColumns() | \(file + "" + "") (line \(#line + 5)) |
+| 1     | eventevent | testLogFormatterWithUnequalColumns() | \(file + "" + "") (line \(#line + 5)) |
+
+""".withStartEndTags
         
         logEvent("event")
         logEvent("eventevent")
-
+        
         XCTAssertEqual(events.formatted, expected)
+    }
+}
+
+extension String {
+    
+    var withStartEndTags: String {
+        "\n**Start Log**\n" + self + "\n**End Log**\n"
     }
 }
