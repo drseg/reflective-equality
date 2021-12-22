@@ -23,19 +23,19 @@ public extension LoggingTestCase {
         c.forEach { logEvent($0, function: function, file: file, line: line) }
     }
     
-    func assertNoEventsLogged(file: StaticString = #file, line: UInt = #line) {
+    func assertNoEventsLogged(file: StaticString = #filePath, line: UInt = #line) {
         assertLoggedEventCount(0)
     }
     
-    func assertLoggedEventCount(_ expected: Int, file: StaticString = #file, line: UInt = #line) {
+    func assertLoggedEventCount(_ expected: Int, file: StaticString = #filePath, line: UInt = #line) {
         XCTAssertEqual(events.count, expected, file: file, line: line)
     }
     
-    func assertLastLoggedEvent(_ expected: Any, file: StaticString = #file, line: UInt = #line) {
+    func assertLastLoggedEvent(_ expected: Any, file: StaticString = #filePath, line: UInt = #line) {
         assertLoggedEvent(expected, atIndex: events.count - 1, file: file, line: line)
     }
     
-    func assertLoggedEvent(_ expected: Any, atIndex index: Int = 0, file: StaticString = #file, line: UInt = #line) {
+    func assertLoggedEvent(_ expected: Any, atIndex index: Int = 0, file: StaticString = #filePath, line: UInt = #line) {
         guard index < events.count else {
             XCTFail("Expected an item number \(index + 1), but observed only \(events.count) item(s).", file: file, line: line)
             return
@@ -43,11 +43,11 @@ public extension LoggingTestCase {
         assertSameValue(events[index].event, expected, file: file, line: line)
     }
     
-    func assertLastLoggedEventSequence<C: Collection>(_ c: C, file: StaticString = #file, line: UInt = #line) {
+    func assertLastLoggedEventSequence<C: Collection>(_ c: C, file: StaticString = #filePath, line: UInt = #line) {
         assertLoggedEventSequence(c, startingAt: events.count - c.count, file: file, line: line)
     }
     
-    func assertLoggedEventSequence<C: Collection>(_ c: C, startingAt start: Int = 0, file: StaticString = #file, line: UInt = #line) {
+    func assertLoggedEventSequence<C: Collection>(_ c: C, startingAt start: Int = 0, file: StaticString = #filePath, line: UInt = #line) {
         for (index, entry) in c.enumerated() {
             assertLoggedEvent(entry, atIndex: start + index, file: file, line: line)
         }

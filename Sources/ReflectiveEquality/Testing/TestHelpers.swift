@@ -2,11 +2,11 @@ import XCTest
 
 public extension XCTestCase {
     
-    func assertSameValue(_ lhs: Any, _ rhs: Any, file: StaticString = #file, line: UInt = #line) {
+    func assertSameValue(_ lhs: Any, _ rhs: Any, file: StaticString = #filePath, line: UInt = #line) {
         assertSameValue([lhs, rhs], file: file, line: line)
     }
 
-    func assertNotSameValue(_ lhs: Any, _ rhs: Any, file: StaticString = #file, line: UInt = #line) {
+    func assertNotSameValue(_ lhs: Any, _ rhs: Any, file: StaticString = #filePath, line: UInt = #line) {
         assertNotSameValue([lhs, rhs], file: file, line: line)
     }
 
@@ -14,11 +14,11 @@ public extension XCTestCase {
         assert(XCTAssertTrue, args, generateEqualErrorMessage(args), file: file, line: line)
     }
 
-    func assertNotSameValue(_ args: [Any], file: StaticString = #file, line: UInt = #line) {
+    func assertNotSameValue(_ args: [Any], file: StaticString = #filePath, line: UInt = #line) {
         assert(XCTAssertFalse, args, generateNonEqualErrorMessage(args), file: file, line: line)
     }
 
-    internal func assert(_ assertion: (@autoclosure () throws -> Bool, @autoclosure () -> String, StaticString, UInt) -> (), _ args: [Any], _ message: String, file: StaticString = #file, line: UInt = #line) {
+    internal func assert(_ assertion: (@autoclosure () throws -> Bool, @autoclosure () -> String, StaticString, UInt) -> (), _ args: [Any], _ message: String, file: StaticString = #filePath, line: UInt = #line) {
         assertion(haveSameValue(args), message, file, line)
     }
     

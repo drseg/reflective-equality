@@ -8,11 +8,16 @@ final class LoggingTestCaseTests: XCTestCase, LoggingTestCase {
     let file = "LoggingTestCaseTests.swift"
     let event = "test".scrambled
     
+    func eventTrace(function: String, line: UInt) -> EventTrace {
+        EventTrace(event: event,
+                   function: function,
+                   fileName: file,
+                   line: line)
+    }
+    
     func testLog() {
-        let expectedTrace = EventTrace(
-            event: event,
+        let expectedTrace = eventTrace(
             function: #function,
-            fileName: file,
             line: #line + 3
         )
         
@@ -22,10 +27,8 @@ final class LoggingTestCaseTests: XCTestCase, LoggingTestCase {
     }
     
     func testLogSequence() {
-        let expectedTrace = EventTrace(
-            event: event,
+        let expectedTrace = eventTrace(
             function: #function,
-            fileName: file,
             line: #line + 3
         )
         
