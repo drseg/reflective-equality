@@ -2,7 +2,6 @@
 import XCTest
 
 final class StringDescribingTests: ReflectiveEqualityTests {
-
     func test_someInstancesCanBeDescribedAsExpected() {
         1  => "1"
         1.1 => "1.1"
@@ -134,7 +133,6 @@ final class StringDescribingTests: ReflectiveEqualityTests {
 }
 
 final class MirrorTests: XCTestCase {
-
     func test_inheritedPropertiesAreNotChildren() {
         class A { let a = "a" }
         class B: A { let b = "b"}

@@ -2,13 +2,12 @@ import XCTest
 @testable import ReflectiveEquality
 
 final class LoggingTestCaseTests: XCTestCase, LoggingTestCase {
-    
     var events: [EventTrace] = []
     
     let file = "LoggingTestCaseTests.swift"
     let event = "test".scrambled
     
-    func eventTrace(function: String, line: UInt) -> EventTrace {
+    func eventTrace(function: String = #function, line: UInt) -> EventTrace {
         EventTrace(event: event,
                    function: function,
                    fileName: file,
@@ -16,10 +15,7 @@ final class LoggingTestCaseTests: XCTestCase, LoggingTestCase {
     }
     
     func testLog() {
-        let expectedTrace = eventTrace(
-            function: #function,
-            line: #line + 3
-        )
+        let expectedTrace = eventTrace(line: #line + 2)
         
         logEvent(event)
         XCTAssertEqual(events.count, 1)
@@ -27,10 +23,7 @@ final class LoggingTestCaseTests: XCTestCase, LoggingTestCase {
     }
     
     func testLogSequence() {
-        let expectedTrace = eventTrace(
-            function: #function,
-            line: #line + 3
-        )
+        let expectedTrace = eventTrace(line: #line + 2)
         
         logEventSequence([event])
         XCTAssertEqual(events.count, 1)
@@ -55,6 +48,7 @@ final class LoggingTestCaseTests: XCTestCase, LoggingTestCase {
     
     func testAssertLogLengthFails() {
         XCTExpectFailure()
+        assertLoggedEventCount(1)
         logEvent(event)
         assertLoggedEventCount(0)
     }
@@ -65,10 +59,10 @@ final class LoggingTestCaseTests: XCTestCase, LoggingTestCase {
     }
     
     func testAssertLoggedFails() {
-        let message = "Expected an item number 1, but observed only 0 item(s)."
-        expectFailureMessage(toContain: message) {
-            assertLoggedEvent(event)
-        }
+        expectFailure(
+            message: "Expected an item number 1, but observed only 0 item(s).",
+            calling: assertLoggedEvent(event)
+        )
     }
     
     let eventSequence = ["test1", "test2"]
@@ -109,15 +103,15 @@ final class LoggingTestCaseTests: XCTestCase, LoggingTestCase {
         assertLastLoggedEventSequence([event, "test1"])
     }
     
-    func testLogFormatter() throws {
+    func testFormatter() throws {
         let expected =
 """
 
 **Start Log**
 
-| Index | Event  | Function           | File & Line                           |
-| 0     | event  | testLogFormatter() | \(file + "" + "") (line \(#line + 7)) |
-| 1     | event2 | testLogFormatter() | \(file + "" + "") (line \(#line + 7)) |
+| Index | Event  | Function        | File & Line                           |
+| 0     | event  | testFormatter() | \(file + "" + "") (line \(#line + 7)) |
+| 1     | event2 | testFormatter() | \(file + "" + "") (line \(#line + 7)) |
 
 **End Log**
 

@@ -7,7 +7,6 @@ class ReflectiveEqualityTests: XCTestCase {
 }
 
 class SimpleFoundationTests: ReflectiveEqualityTests {
-    
     func testCG() {
         let a = CGFloat(0.1)
         let b = CGFloat(0.1)
@@ -66,8 +65,8 @@ class SimpleFoundationTests: ReflectiveEqualityTests {
         let c2: () -> () = {            }
         let c3: () -> () = { print("c") }
         
-        let c4: () -> (String)      = { "c" }
-        let c5: (() -> (String))?   = { "c" }
+        let c4: () -> (String)    = { "c" }
+        let c5: (() -> (String))? = { "c" }
         
         assertSameValue(c1, c2)
         assertSameValue(c1, c3)
@@ -88,7 +87,6 @@ class SimpleFoundationTests: ReflectiveEqualityTests {
 }
 
 class ComplexFoundationTests: ReflectiveEqualityTests {
-    
     func testArrayOfNSObject() {
         assertSameValue([nsO], [nsO])
         assertSameValue([[nsO]], [[nsO]])
@@ -163,8 +161,12 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
         let range1 = NSRange(location: 0, length: 1)
         let range2 = NSRange(location: 1, length: 1)
         
-        s1.addAttribute(.font, value: NSFont(name: "Helvetica", size: 10)!, range: range2)
-        s2.addAttribute(.font, value: NSFont(name: "Arial", size: 10)!, range: range2)
+        s1.addAttribute(.font,
+                        value: NSFont(name: "Helvetica", size: 10)!,
+                        range: range2)
+        s2.addAttribute(.font,
+                        value: NSFont(name: "Arial", size: 10)!,
+                        range: range2)
         
         assertNotSameValue(s1, s2)
         
@@ -219,7 +221,9 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
     }
     
     func testNSFont() {
-        func font(_ size: CGFloat = 10) -> NSFont { NSFont(name: "Helvetica", size: size)! }
+        func font(_ size: CGFloat = 10) -> NSFont {
+            NSFont(name: "Helvetica", size: size)!
+        }
         
         assertSameValue(font(), font())
         assertNotSameValue(font(), font(11))
@@ -259,7 +263,6 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
 }
 
 class SimpleCompositionTests: ReflectiveEqualityTests {
-    
     func testDifferentTypesNotEqual() {
         struct First {}
         struct Second {}
@@ -312,7 +315,6 @@ class SimpleCompositionTests: ReflectiveEqualityTests {
 }
 
 class ComplexCompositionTests: ReflectiveEqualityTests {
-    
     func testStructWithNSObjectEqualByPropertyValue() {
         struct NSHolder {
             let o = NSObject()
@@ -458,7 +460,6 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
 }
 
 class MultiArgTests: ReflectiveEqualityTests {
-       
     func testMultipleArguments() {
         assertSameValue([])
         assertSameValue([1])

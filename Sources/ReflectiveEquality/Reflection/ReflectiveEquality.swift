@@ -44,7 +44,6 @@ func shallowDescription(_ instance: Any) -> String {
 }
 
 extension Mirror {
-    
     var hasChildren: Bool {
         children.isEmpty
         ? superclassHasChildren
@@ -65,7 +64,6 @@ extension Mirror {
 }
 
 extension String {
-    
     var removingClassIDs: String {
         removingMatches("[ =(]0x[0-9a-f]{\(hexLength)}")
     }

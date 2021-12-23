@@ -2,15 +2,14 @@ import XCTest
 @testable import ReflectiveEquality
 
 class ErrorHandlingTests: XCTestCase {
-    
     func testEqualErrorConditions() {
         let error = generateEqualErrorMessage
         
         XCTAssertEqual(error([]), "")
         XCTAssertEqual(error([1]), "1 must equal itself")
-        XCTAssertEqual(error([1, 1]), "\nActual: 1\nExpected: 1")
-        XCTAssertEqual(error([1, 1, 1]), "\nArg 1: 1\nArg 2: 1\nArg 3: 1")
-        XCTAssertEqual(error([1, 1, 1, 1]), "\nArg 1: 1\nArg 2: 1\nArg 3: 1\nArg 4: 1")
+        XCTAssertEqual(error([1, 2]), "\nActual: 1\nExpected: 2")
+        XCTAssertEqual(error([1, 2, 3]), "\nArg 1: 1\nArg 2: 2\nArg 3: 3")
+        XCTAssertEqual(error([1, 2, 3, 4]), "\nArg 1: 1\nArg 2: 2\nArg 3: 3\nArg 4: 4")
     }
     
     func testNonEqualErrorConditions() {

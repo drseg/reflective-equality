@@ -1,7 +1,6 @@
 import XCTest
 
 open class AbstractTestCase: XCTestCase {
-
     open var abstractTestIdentifier: String {
         "testAbstractly"
     }
@@ -21,7 +20,8 @@ open class AbstractTestCase: XCTestCase {
     }
     
     private var isConcreteSubclass: Bool {
-        Self.self != AbstractTestCase.self && Self.self != abstractTestClass
+        Self.self != AbstractTestCase.self &&
+        Self.self != abstractTestClass
     }
     
     private func isConcrete(_ test: XCTest) -> Bool {

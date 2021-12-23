@@ -1,55 +1,123 @@
 import XCTest
 
 public protocol TestLogger {
-
-    func logEvent(_ observed: Any, function: String, file: String, line: UInt)
-    func logEventSequence<C: Collection>(_ sequence: C, function: String, file: String, line: UInt)
+    func logEvent(
+        _ observed: Any,
+        function: String,
+        file: String,
+        line: UInt
+    )
+    
+    func logEventSequence<C>(
+        _ sequence: C,
+        function: String,
+        file: String,
+        line: UInt
+    ) where C: Collection
 }
 
 public protocol LoggingTestCase: TestLogger, XCTestCase {
-    
     var events: [EventTrace] { get set }
 }
 
 public extension LoggingTestCase {
-        
-    func logEvent(_ observed: Any, function: String = #function, file: String = #fileID, line: UInt = #line) {
+    func logEvent(
+        _ observed: Any,
+        function: String = #function,
+        file: String = #fileID,
+        line: UInt = #line
+    ) {
         let fileName = String(file.split(separator: "/").last!)
-        let trace = EventTrace(event: observed, function: function, fileName: fileName, line: line)
+        let trace = EventTrace(event: observed,
+                               function: function,
+                               fileName: fileName,
+                               line: line)
         events.append(trace)
     }
     
-    func logEventSequence<C: Collection>(_ c: C, function: String = #function, file: String = #fileID, line: UInt = #line) {
-        c.forEach { logEvent($0, function: function, file: file, line: line) }
+    func logEventSequence<C: Collection>(
+        _ collection: C,
+        function: String = #function,
+        file: String = #fileID,
+        line: UInt = #line
+    ) {
+        collection.forEach {
+            logEvent($0,
+                     function: function,
+                     file: file,
+                     line: line)
+        }
     }
     
-    func assertNoEventsLogged(file: StaticString = #filePath, line: UInt = #line) {
+    func assertNoEventsLogged(
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
         assertLoggedEventCount(0)
     }
     
-    func assertLoggedEventCount(_ expected: Int, file: StaticString = #filePath, line: UInt = #line) {
-        XCTAssertEqual(events.count, expected, file: file, line: line)
+    func assertLoggedEventCount(
+        _ expected: Int,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        XCTAssertEqual(events.count,
+                       expected,
+                       file: file,
+                       line: line)
     }
     
-    func assertLastLoggedEvent(_ expected: Any, file: StaticString = #filePath, line: UInt = #line) {
-        assertLoggedEvent(expected, atIndex: events.count - 1, file: file, line: line)
+    func assertLastLoggedEvent(
+        _ expected: Any,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        assertLoggedEvent(expected,
+                          atIndex: events.count - 1,
+                          file: file,
+                          line: line)
     }
     
-    func assertLoggedEvent(_ expected: Any, atIndex index: Int = 0, file: StaticString = #filePath, line: UInt = #line) {
+    func assertLoggedEvent(
+        _ expected: Any,
+        atIndex index: Int = 0,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
         guard index < events.count else {
-            XCTFail("Expected an item number \(index + 1), but observed only \(events.count) item(s).", file: file, line: line)
+            let message =
+            "Expected an item number \(index + 1), " +
+            "but observed only \(events.count) item(s)."
+            XCTFail(message, file: file, line: line)
             return
         }
-        assertSameValue(events[index].event, expected, file: file, line: line)
+        assertSameValue(events[index].event, expected,
+                        file: file,
+                        line: line)
     }
     
-    func assertLastLoggedEventSequence<C: Collection>(_ c: C, file: StaticString = #filePath, line: UInt = #line) {
-        assertLoggedEventSequence(c, startingAt: events.count - c.count, file: file, line: line)
+    func assertLastLoggedEventSequence<C: Collection> (
+        _ collection: C,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        assertLoggedEventSequence(collection,
+                                  startingAt: events.count - collection.count,
+                                  file: file,
+                                  line: line)
     }
     
-    func assertLoggedEventSequence<C: Collection>(_ c: C, startingAt start: Int = 0, file: StaticString = #filePath, line: UInt = #line) {
-        for (index, entry) in c.enumerated() {
-            assertLoggedEvent(entry, atIndex: start + index, file: file, line: line)
+    func assertLoggedEventSequence<C: Collection>(
+        _ collection: C,
+        startingAt start: Int = 0,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        for (i, event) in collection.enumerated() {
+            assertLoggedEvent(event,
+                              atIndex: start + i,
+                              file: file,
+                              line: line)
         }
     }
     
@@ -59,22 +127,18 @@ public extension LoggingTestCase {
 }
 
 public struct EventTrace {
-    
     let event: Any
     let function: String
     let fileName: String
     let line: UInt
 }
 
-
-extension Array where Element == EventTrace {
-    
+extension Collection where Element == EventTrace {
     var formatted: String {
-        
-        func formatEntry(_ entry: EnumeratedSequence<Array<EventTrace>>.Element) -> String {
-            let trace = entry.element
+        func formatEntry(_ entry: (i: Int, et: EventTrace)) -> String {
+            let trace = entry.et
             
-            let index = " \(entry.offset) "
+            let index = " \(entry.i) "
             let event = " \(trace.event) "
             let function = " \(trace.function) "
             let fileAndLine = " \(trace.fileName) (line \(trace.line)) "
@@ -88,14 +152,19 @@ extension Array where Element == EventTrace {
             return "|\(index)|\(event)|\(function)|\(fileAndLine)|"
         }
         
-        func padColumns(_ s: String) -> String {
-            s.split(separator: Character(divider))
-                .enumerated()
-                .reduce(into: "")
-            { result, column in
+        func padColumns(_ row: String) -> String {
+            func padColumn(
+                _ columns: inout String,
+                _ column: (Int, String.SubSequence)
+            ) {
                 let padCount = columnWidths[column.0] - column.1.count
-                result += divider + column.1.rightPadded(padCount)
-            } + divider
+                columns += divider + column.1.rightPadded(padCount)
+            }
+            
+            return row
+                .split(separator: Character(divider))
+                .enumerated()
+                .reduce(into: "", padColumn) + divider
         }
         
         let header = "| Index | Event | Function | File & Line |"
@@ -124,7 +193,6 @@ extension Array where Element == EventTrace {
 }
 
 extension StringProtocol {
-    
     public var scrambled: String {
         String(shuffled())
     }
