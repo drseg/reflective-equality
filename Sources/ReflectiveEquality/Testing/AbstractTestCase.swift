@@ -15,16 +15,16 @@ open class AbstractTestCase: XCTestCase {
         }
     }
     
-    private func shouldRun(_ test: XCTest) -> Bool {
+    func shouldRun(_ test: XCTest) -> Bool {
         isConcreteSubclass || isConcrete(test)
     }
     
-    private var isConcreteSubclass: Bool {
+    var isConcreteSubclass: Bool {
         Self.self != AbstractTestCase.self &&
         Self.self != abstractTestClass
     }
     
-    private func isConcrete(_ test: XCTest) -> Bool {
+    func isConcrete(_ test: XCTest) -> Bool {
         !test.name.contains(abstractTestIdentifier)
     }
 }

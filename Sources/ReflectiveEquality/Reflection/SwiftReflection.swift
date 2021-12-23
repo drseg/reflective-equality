@@ -1,4 +1,5 @@
 import Foundation
+import XCTest
 
 public func haveSameValue(_ args: [Any]) -> Bool {
     args.allSatisfy { haveSameValue($0, args[0]) }
@@ -19,7 +20,9 @@ func deepDescription(_ instance: Any) -> String {
 }
 
 func shallowObjCDescription(_ instance: Any) -> String {
-    guard let instance = instance as? NSObject else { return "" }
+    guard let instance = instance as? NSObject else {
+        return ""
+    }
     
     return instance
         .propertyValues
@@ -78,12 +81,6 @@ extension String {
                              options: .regularExpression)
     }
 }
-
-protocol Stringy {}
-
-extension String: Stringy {}
-extension Substring: Stringy {}
-extension NSString: Stringy {}
 
 infix operator ???
 
