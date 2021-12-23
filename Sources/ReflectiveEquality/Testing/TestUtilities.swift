@@ -43,7 +43,7 @@ public extension XCTestCase {
                line: line)
     }
     
-    internal func assert(
+    func assert(
         _ assertion: (@autoclosure () throws -> Bool,
                       @autoclosure () -> String, StaticString, UInt) -> (),
         _ args: [Any],
@@ -132,7 +132,10 @@ public extension XCTestCase {
         }
     }
     
-    func performDeferred(timeout: Double = 0.1, _ action: (XCTestExpectation) -> ()) {
+    func performDeferred(
+        timeout: Double = 0.1,
+        _ action: (XCTestExpectation) -> ()
+    ) {
         let e = XCTestExpectation()
         action(e)
         wait(for: [e], timeout: timeout)
