@@ -132,6 +132,39 @@ public extension XCTestCase {
         }
     }
     
+    func performDeferred<In1, In2, In3, Out>(
+        timeout: Double = 0.1,
+        action: (In1, In2, In3, @escaping (Out) -> ()) -> (),
+        arg1: In1,
+        arg2: In2,
+        arg3: In3,
+        completion: @escaping (Out) -> ()
+    ) {
+        performDeferred(timeout: timeout) { e in
+            action(arg1, arg2, arg3) { result in
+                e.fulfill()
+                completion(result)
+            }
+        }
+    }
+    
+    func performDeferred<In1, In2, In3, In4, Out>(
+        timeout: Double = 0.1,
+        action: (In1, In2, In3, In4, @escaping (Out) -> ()) -> (),
+        arg1: In1,
+        arg2: In2,
+        arg3: In3,
+        arg4: In4,
+        completion: @escaping (Out) -> ()
+    ) {
+        performDeferred(timeout: timeout) { e in
+            action(arg1, arg2, arg3, arg4) { result in
+                e.fulfill()
+                completion(result)
+            }
+        }
+    }
+    
     func performDeferred(
         timeout: Double = 0.1,
         _ action: (XCTestExpectation) -> ()

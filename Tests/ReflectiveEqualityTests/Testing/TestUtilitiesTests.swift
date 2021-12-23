@@ -2,7 +2,7 @@ import XCTest
 @testable import ReflectiveEquality
 
 private func delay() {
-    usleep(500)
+    usleep(550)
 }
 
 class TestUtilitiesTests: XCTestCase {
@@ -33,6 +33,27 @@ class TestUtilitiesTests: XCTestCase {
         completion("action")
     }
     
+    func performAllDeferred(timeout: Double = 0.1, action: (@escaping (String) -> ()) -> (), completion: @escaping (String) -> ()) {
+        performDeferred(timeout: timeout, action: { block in
+            action { block($0) }
+        }, completion: completion)
+        
+        performDeferred(timeout: timeout, action: { _, block in
+            action { block($0) }
+        }, arg: 0, completion: completion)
+
+        performDeferred(timeout: timeout, action: { _,_, block in
+            action { block($0) }
+        }, arg1: 0, arg2: 0, completion: completion)
+
+        performDeferred(timeout: timeout, action: { _,_,_, block in
+            action { block($0) }
+        }, arg1: 0, arg2: 0, arg3: 0, completion: completion)
+
+        performDeferred(timeout: timeout, action: { _,_,_,_, block in
+            action { block($0) }
+        }, arg1: 0, arg2: 0, arg3: 0, arg4: 0, completion: completion)
+    }
     
     func testExpectFailureWithCountPassesWithCorrectCount() {
         expectFailure(count: 1, message: "failed") {
@@ -75,94 +96,23 @@ class TestUtilitiesTests: XCTestCase {
     }
 
     func testPerformDeferredWithActionFailsIfFunctionDoesNotComplete() {
-        func action(completion: (String) -> ()) {
-            neverComplete(completion: completion)
-        }
-        
-        func action1(arg: Any, completion: (String) -> ()) {
-            neverComplete(completion: completion)
-        }
-        
-        func action2(arg1: Any, arg2: Any, completion: (String) -> ()) {
-            neverComplete(completion: completion)
-        }
-        
-        func fail() {
-            XCTFail("Should not have reached this line")
-
-        }
-        
-        expectDeferredFailure(count: 3) {
-            performDeferred(action: action) { _ in
-                fail()
-            }
-            
-            performDeferred(action: action1, arg: "") { _ in
-                fail()
-            }
-            
-            performDeferred(action: action2, arg1: "", arg2: "") { _ in
-                fail()
+        expectDeferredFailure(count: 5) {
+            performAllDeferred(action: neverComplete) { _ in
+                XCTFail("Should not have reached this line")
             }
         }
     }
     
     func testPerformDeferredWithActionFailsIfExpectationTimesOut() {
-        func action(completion: @escaping (String) -> ()
-        ) {
-            completeDelayed(completion: completion)
-        }
-        
-        func action1(arg: Any,
-                     completion: @escaping (String) -> ()
-        ) {
-            completeDelayed(completion: completion)
-        }
-        
-        func action2(arg1: Any,
-                     arg2: Any,
-                     completion: @escaping (String) -> ()
-        ) {
-            completeDelayed(completion: completion)
-        }
-               
-        expectDeferredFailure(count: 3) {
-            performDeferred(timeout: 0, action: action) {
-                XCTAssertEqual($0, "action")
-            }
-            
-            performDeferred(timeout: 0, action: action1, arg: "") {
-                XCTAssertEqual($0, "action")
-            }
-            
-            performDeferred(timeout: 0, action: action2, arg1: "", arg2: "") {
+        expectDeferredFailure(count: 5) {
+            performAllDeferred(timeout: 0, action: completeDelayed) {
                 XCTAssertEqual($0, "action")
             }
         }
     }
     
     func testPerformDeferredWithActionPassesIfFunctionCompletes() {
-        func action(completion: (String) -> ()) {
-            completeOnTime(completion: completion)
-        }
-        
-        func action1(arg: Any, completion: (String) -> ()) {
-            completeOnTime(completion: completion)
-        }
-        
-        func action2(arg1: Any, arg2: Any, completion: (String) -> ()) {
-            completeOnTime(completion: completion)
-        }
-        
-        performDeferred(timeout: 0, action: action) {
-            XCTAssertEqual($0, "action")
-        }
-        
-        performDeferred(timeout: 0, action: action1, arg: "") {
-            XCTAssertEqual($0, "action")
-        }
-        
-        performDeferred(timeout: 0, action: action2, arg1: "", arg2: "") {
+        performAllDeferred(timeout: 0, action: completeOnTime) {
             XCTAssertEqual($0, "action")
         }
     }
