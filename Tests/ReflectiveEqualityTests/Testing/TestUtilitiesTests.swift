@@ -1,10 +1,6 @@
 import XCTest
 @testable import ReflectiveEquality
 
-private func delay() {
-    usleep(550)
-}
-
 class TestUtilitiesTests: XCTestCase {
     
     func expectDeferredFailure(
@@ -24,8 +20,9 @@ class TestUtilitiesTests: XCTestCase {
     
     func completeDelayed(completion: @escaping (String) -> ()) {
         DispatchQueue.global().async {
-            delay()
-            completion("action")
+            DispatchQueue.main.async {
+                completion("action")
+            }
         }
     }
     
@@ -33,26 +30,63 @@ class TestUtilitiesTests: XCTestCase {
         completion("action")
     }
     
-    func performAllDeferred(timeout: Double = 0.1, action: (@escaping (String) -> ()) -> (), completion: @escaping (String) -> ()) {
-        performDeferred(timeout: timeout, action: { block in
-            action { block($0) }
-        }, completion: completion)
+    func performAllDeferred(
+        timeout: Double = 0.1,
+        action: (@escaping (String) -> ()) -> (),
+        completion: @escaping (String) -> ()
+    ) {
+        var args = [Int]()
         
-        performDeferred(timeout: timeout, action: { _, block in
+        performDeferred(timeout: timeout,
+                        action: {
+            block in
             action { block($0) }
-        }, arg: 0, completion: completion)
-
-        performDeferred(timeout: timeout, action: { _,_, block in
+        },
+                        completion: completion)
+        
+        performDeferred(timeout: timeout,
+                        action: {
+            a, block in
+            args.append(a)
             action { block($0) }
-        }, arg1: 0, arg2: 0, completion: completion)
-
-        performDeferred(timeout: timeout, action: { _,_,_, block in
+        },
+                        arg: 0,
+                        completion: completion)
+        
+        performDeferred(timeout: timeout,
+                        action: {
+            a1, a2, block in
+            args.append(contentsOf: [a1, a2])
             action { block($0) }
-        }, arg1: 0, arg2: 0, arg3: 0, completion: completion)
-
-        performDeferred(timeout: timeout, action: { _,_,_,_, block in
+        },
+                        arg1: 1,
+                        arg2: 2,
+                        completion: completion)
+        
+        performDeferred(timeout: timeout,
+                        action: {
+            a1, a2, a3, block in
+            args.append(contentsOf: [a1, a2, a3])
             action { block($0) }
-        }, arg1: 0, arg2: 0, arg3: 0, arg4: 0, completion: completion)
+        },
+                        arg1: 3,
+                        arg2: 4,
+                        arg3: 5,
+                        completion: completion)
+        
+        performDeferred(timeout: timeout,
+                        action: {
+            a1, a2, a3, a4, block in
+            args.append(contentsOf: [a1, a2, a3, a4])
+            action { block($0) }
+        },
+                        arg1: 6,
+                        arg2: 7,
+                        arg3: 8,
+                        arg4: 9,
+                        completion: completion)
+        
+        XCTAssertEqual(args, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
     }
     
     func testExpectFailureWithCountPassesWithCorrectCount() {
@@ -84,8 +118,9 @@ class TestUtilitiesTests: XCTestCase {
         expectDeferredFailure {
             performDeferred(timeout: 0) { e in
                 DispatchQueue.global().async {
-                    delay()
-                    e.fulfill()
+                    DispatchQueue.main.async {
+                        e.fulfill()
+                    }
                 }
             }
         }
@@ -97,7 +132,7 @@ class TestUtilitiesTests: XCTestCase {
 
     func testPerformDeferredWithActionFailsIfFunctionDoesNotComplete() {
         expectDeferredFailure(count: 5) {
-            performAllDeferred(action: neverComplete) { _ in
+            performAllDeferred(timeout: 0, action: neverComplete) { _ in
                 XCTFail("Should not have reached this line")
             }
         }
