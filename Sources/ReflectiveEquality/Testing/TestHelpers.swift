@@ -54,7 +54,10 @@ public extension XCTestCase {
         assertion(haveSameValue(args), message, file, line)
     }
     
-    func expectFailure(message: String, calling test: () throws -> ()) {
+    func expectFailure(
+        message: String,
+        calling test: () throws -> ()
+    ) {
         try expectFailure(message: message, calling: test())
     }
     

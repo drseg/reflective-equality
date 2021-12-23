@@ -87,6 +87,10 @@ class SimpleFoundationTests: ReflectiveEqualityTests {
 }
 
 class ComplexFoundationTests: ReflectiveEqualityTests {
+    func font(name: String = "Helvetica", size: CGFloat = 10) -> NSFont {
+        NSFont(name: name, size: size)!
+    }
+    
     func testArrayOfNSObject() {
         assertSameValue([nsO], [nsO])
         assertSameValue([[nsO]], [[nsO]])
@@ -161,12 +165,8 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
         let range1 = NSRange(location: 0, length: 1)
         let range2 = NSRange(location: 1, length: 1)
         
-        s1.addAttribute(.font,
-                        value: NSFont(name: "Helvetica", size: 10)!,
-                        range: range2)
-        s2.addAttribute(.font,
-                        value: NSFont(name: "Arial", size: 10)!,
-                        range: range2)
+        s1.addAttribute(.font, value: font(), range: range2)
+        s2.addAttribute(.font, value: font(name: "Arial"), range: range2)
         
         assertNotSameValue(s1, s2)
         
@@ -215,21 +215,16 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
         let s2 = NSMutableAttributedString(string: classIDMatch2)
         
         let range = NSRange(location: 0, length: s1.length)
-        let font = NSFont(name: "Helvetica", size: 10)!
         
-        s1.addAttribute(.font, value: font, range: range)
-        s2.addAttribute(.font, value: font, range: range)
+        s1.addAttribute(.font, value: font(), range: range)
+        s2.addAttribute(.font, value: font(), range: range)
                 
         assertNotSameValue(s1, s2)
     }
     
     func testNSFont() {
-        func font(_ size: CGFloat = 10) -> NSFont {
-            NSFont(name: "Helvetica", size: size)!
-        }
-        
         assertSameValue(font(), font())
-        assertNotSameValue(font(), font(11))
+        assertNotSameValue(font(), font(size: 11))
     }
     
     func testNSArraysOfNSStrings() {
@@ -421,19 +416,19 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
         
         class Child: Parent {}
         class GrandChild: Child {}
-        class Cousin: Parent {
+        class StepChild: Parent {
             let b: Int
             init(_ a: Int, _ b: Int) { self.b = b; super.init(a) }
         }
                 
         assertSameValue(Child(1), Child(1))
         assertSameValue(GrandChild(1), GrandChild(1))
-        assertSameValue(Cousin(1, 1), Cousin(1, 1))
+        assertSameValue(StepChild(1, 1), StepChild(1, 1))
 
         assertNotSameValue(Child(1), Child(2))
         assertNotSameValue(GrandChild(1), GrandChild(2))
-        assertNotSameValue(Cousin(1, 1), Cousin(1, 2))
-        assertNotSameValue(Cousin(1, 1), Cousin(2, 1))
+        assertNotSameValue(StepChild(1, 1), StepChild(1, 2))
+        assertNotSameValue(StepChild(1, 1), StepChild(2, 1))
     }
     
     func testObjectsWithClosureProperties() {
