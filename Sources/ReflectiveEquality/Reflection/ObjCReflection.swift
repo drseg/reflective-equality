@@ -1,6 +1,7 @@
 import Foundation
 import ExceptionCatcher
 
+@inlinable
 public func suppressExceptions<T>(in block: @escaping () -> (T?)) -> T? {
     var result: T?
     try? Exceptions.intercept {
@@ -10,36 +11,45 @@ public func suppressExceptions<T>(in block: @escaping () -> (T?)) -> T? {
 }
 
 protocol SwiftMirrorUnsafe {}
+
 extension NSString: SwiftMirrorUnsafe {}
 extension NSNumber: SwiftMirrorUnsafe {}
 
 extension NSObject {
+    @usableFromInline
     typealias UMP<T> = UnsafeMutablePointer<T>
     
+    @inlinable
     public var propertiesAndIvars: [String: Any] {
         ivars.merging(properties)
     }
 
+    @inlinable
     public var ivars: [String: Any] {
         valuesDictionary(forKeys: ivarPointersDictionary.keys)
     }
 
+    @inlinable
     public var properties: [String: Any] {
         valuesDictionary(forKeys: propertyPointersDictionary.keys)
     }
     
+    @inlinable
     public var propertyAndIvarValues: [Any] {
         propertyValues + ivarValues
     }
     
+    @inlinable
     public var propertyValues: [Any] {
         valuesArray(forKeys: propertyKeys)
     }
     
+    @inlinable
     public var ivarValues: [Any] {
         valuesArray(forKeys: ivarKeys)
     }
     
+    @usableFromInline
     func valuesDictionary<C: Collection>(
         forKeys keys: C
     ) -> [String: Any] where C.Element == String {
@@ -50,6 +60,7 @@ extension NSObject {
         }
     }
     
+    @usableFromInline
     func valuesArray<C: Collection>(
         forKeys keys: C
     ) -> [Any] where C.Element == String {
@@ -60,36 +71,43 @@ extension NSObject {
         }
     }
     
+    @usableFromInline
     func safeValue(forKey key: String) -> Any? {
         suppressExceptions { self.value(forKey: key) }
     }
     
+    @usableFromInline
     var isMirrorSafe: Bool {
         !(self is SwiftMirrorUnsafe)
     }
     
+    @usableFromInline
     var ivarKeys: [String] {
         allKeys(getList: class_copyIvarList,
                 getName: ivar_getName)
     }
     
+    @usableFromInline
     var propertyKeys: [String] {
         allKeys(getList: class_copyPropertyList,
                 getName: property_getName)
     }
     
+    @usableFromInline
     var ivarPointersDictionary: [String: Any] {
         deepPointerDictionary(getList: class_copyIvarList,
                               getName: ivar_getName,
                               getItem: class_getInstanceVariable)
     }
     
+    @usableFromInline
     var propertyPointersDictionary: [String: Any] {
         deepPointerDictionary(getList: class_copyPropertyList,
                               getName: property_getName,
                               getItem: class_getProperty)
     }
     
+    @usableFromInline
     func deepPointerDictionary<T>(
         type: AnyClass? = nil,
         getList: (AnyClass?, UMP<UInt32>?) -> UMP<T>?,
@@ -102,6 +120,7 @@ extension NSObject {
             }
     }
     
+    @usableFromInline
     func allKeys<T>(
         type: AnyClass? = nil,
         getList: (AnyClass?, UMP<UInt32>?) -> UMP<T>?,
@@ -120,6 +139,7 @@ extension NSObject {
         : keys
     }
     
+    @usableFromInline
     func keys<T>(
         type: AnyClass,
         getList: (AnyClass?, UMP<UInt32>?) -> UMP<T>?,
@@ -142,16 +162,19 @@ extension NSObject {
 }
 
 extension String {
+    @usableFromInline
     var isIncluded: Bool {
         !["description", "debugDescription"].contains(self)
     }
 }
 
 extension Dictionary {
+    @usableFromInline
     enum MergePrecedence {
         case this, other
     }
     
+    @usableFromInline
     func merging(_ other: [Key : Value], mergePrecedence: MergePrecedence = .this) -> [Key : Value] {
         merging(other) { this, other in
             mergePrecedence == .this ? this : other
