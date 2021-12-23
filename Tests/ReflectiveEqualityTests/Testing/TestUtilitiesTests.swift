@@ -85,7 +85,8 @@ class TestUtilitiesTests: XCTestCase {
                         arg4: 9,
                         completion: completion)
         
-        XCTAssertEqual(args, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+        XCTAssertEqual(args, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                       "performDeferred did not pass its arguments correctly")
     }
     
     func testExpectFailureWithCountPassesWithCorrectCount() {
