@@ -20,7 +20,6 @@ public protocol LoggingTestCase: TestLogger, XCTestCase {
     var events: [EventTrace] { get set }
 }
 
-
 public struct EventTrace {
     let event: Any
     let function: String
