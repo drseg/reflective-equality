@@ -177,8 +177,11 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
     }
     
     func testComplexNSAttributedString() {
-        var parsingOptions: [NSAttributedString.DocumentReadingOptionKey : Any] {
-            [NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.html]
+        typealias ReadingOption = NSAttributedString.DocumentReadingOptionKey
+        typealias DocumentType = NSAttributedString.DocumentType
+        
+        var parsingOptions: [ReadingOption: Any] {
+            [ReadingOption.documentType: DocumentType.html]
         }
 
         var parsedHTML: NSAttributedString {
