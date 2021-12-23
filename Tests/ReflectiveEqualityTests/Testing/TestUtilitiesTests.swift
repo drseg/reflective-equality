@@ -9,8 +9,8 @@ class TestUtilitiesTests: XCTestCase {
         line: UInt = #line,
         _ test: () throws -> ()
     ) {
-        expectFailure(count: count,
-                      message: "Asynchronous wait failed",
+        expectFailure("Asynchronous wait failed",
+                      count: count,
                       file: file,
                       line: line,
                       calling: test)
@@ -90,21 +90,21 @@ class TestUtilitiesTests: XCTestCase {
     }
     
     func testExpectFailureWithCountPassesWithCorrectCount() {
-        expectFailure(count: 1, message: "failed") {
+        expectFailure("failed", count: 1) {
             XCTFail()
         }
     }
     
     func testExpectFailureWithCountFailsWithIncorrectCount() {
-        expectFailure(message: "Unexpected failure count") {
-            expectFailure(count: 0, message: "cat") {
+        expectFailure("Unexpected failure count") {
+            expectFailure("cat", count: 0) {
                 XCTFail("cat")
             }
         }
     }
     
     func testExpectFailureAutoclosure() {
-        expectFailure(message: "failed",
+        expectFailure("failed",
                       calling: XCTFail())
     }
     

@@ -41,7 +41,7 @@ func mirror(_ instance: Any) -> Mirror {
 func shallowDescription(_ instance: Any) -> String {
     let description = String(describing: instance)
     
-    return instance is Stringy
+    return instance is HexNumbersAllowed
     ? description
     : description.removingClassIDs
 }

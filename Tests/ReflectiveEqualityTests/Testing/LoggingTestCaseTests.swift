@@ -60,7 +60,7 @@ final class LoggingTestCaseTests: XCTestCase, LoggingTestCase {
     
     func testAssertLoggedFails() {
         expectFailure(
-            message: "Expected an item number 1, but observed only 0 item(s).",
+            "Expected an item number 1, but observed only 0 item(s).",
             calling: assertLoggedEvent(event)
         )
     }

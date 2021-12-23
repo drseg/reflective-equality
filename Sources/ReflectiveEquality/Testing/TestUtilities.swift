@@ -2,22 +2,22 @@ import XCTest
 
 public extension XCTestCase {
     func expectFailure(
+        _ message: String,
         count: Int? = nil,
-        message: String,
         file: StaticString = #filePath,
         line: UInt = #line,
         calling test: () throws -> ()
     ) {
-        try expectFailure(count: count,
-                          message: message,
+        try expectFailure(message,
+                          count: count,
                           file: file,
                           line: line,
                           calling: test())
     }
     
     func expectFailure(
+        _ message: String,
         count: Int? = nil,
-        message: String,
         file: StaticString = #filePath,
         line: UInt = #line,
         calling test: @autoclosure () throws -> ()
