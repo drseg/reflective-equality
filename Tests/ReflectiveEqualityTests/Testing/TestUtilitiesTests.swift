@@ -31,20 +31,19 @@ class TestUtilitiesTests: XCTestCase {
     }
     
     func performAllDeferred(
-        timeout: Double = 0.1,
         action: (@escaping (String) -> ()) -> (),
         completion: @escaping (String) -> ()
     ) {
         var args = [Int]()
         
-        performDeferred(timeout: timeout,
+        performDeferred(timeout: 0,
                         action: {
             block in
             action { block($0) }
         },
                         completion: completion)
         
-        performDeferred(timeout: timeout,
+        performDeferred(timeout: 0,
                         action: {
             a, block in
             args.append(a)
@@ -53,7 +52,7 @@ class TestUtilitiesTests: XCTestCase {
                         arg: 0,
                         completion: completion)
         
-        performDeferred(timeout: timeout,
+        performDeferred(timeout: 0,
                         action: {
             a1, a2, block in
             args.append(contentsOf: [a1, a2])
@@ -63,7 +62,7 @@ class TestUtilitiesTests: XCTestCase {
                         arg2: 2,
                         completion: completion)
         
-        performDeferred(timeout: timeout,
+        performDeferred(timeout: 0,
                         action: {
             a1, a2, a3, block in
             args.append(contentsOf: [a1, a2, a3])
@@ -74,7 +73,7 @@ class TestUtilitiesTests: XCTestCase {
                         arg3: 5,
                         completion: completion)
         
-        performDeferred(timeout: timeout,
+        performDeferred(timeout: 0,
                         action: {
             a1, a2, a3, a4, block in
             args.append(contentsOf: [a1, a2, a3, a4])
@@ -132,7 +131,7 @@ class TestUtilitiesTests: XCTestCase {
 
     func testPerformDeferredWithActionFailsIfFunctionDoesNotComplete() {
         expectDeferredFailure(count: 5) {
-            performAllDeferred(timeout: 0, action: neverComplete) { _ in
+            performAllDeferred(action: neverComplete) { _ in
                 XCTFail("Should not have reached this line")
             }
         }
@@ -140,14 +139,14 @@ class TestUtilitiesTests: XCTestCase {
     
     func testPerformDeferredWithActionFailsIfExpectationTimesOut() {
         expectDeferredFailure(count: 5) {
-            performAllDeferred(timeout: 0, action: completeDelayed) {
+            performAllDeferred(action: completeDelayed) {
                 XCTAssertEqual($0, "action")
             }
         }
     }
     
     func testPerformDeferredWithActionPassesIfFunctionCompletes() {
-        performAllDeferred(timeout: 0, action: completeOnTime) {
+        performAllDeferred(action: completeOnTime) {
             XCTAssertEqual($0, "action")
         }
     }
