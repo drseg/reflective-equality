@@ -7,7 +7,12 @@ private func delay() {
 
 class TestUtilitiesTests: XCTestCase {
     
-    func expectDeferredFailure(count: Int? = nil, file: StaticString = #file, line: UInt = #line, _ test: () throws -> ()) {
+    func expectDeferredFailure(
+        count: Int? = nil,
+        file: StaticString = #file,
+        line: UInt = #line,
+        _ test: () throws -> ()
+    ) {
         expectFailure(count: count,
                       message: "Asynchronous wait failed",
                       file: file,
@@ -103,15 +108,21 @@ class TestUtilitiesTests: XCTestCase {
     }
     
     func testPerformDeferredWithActionFailsIfExpectationTimesOut() {
-        func action(completion: @escaping (String) -> ()) {
+        func action(completion: @escaping (String) -> ()
+        ) {
             completeDelayed(completion: completion)
         }
         
-        func action1(arg: Any, completion: @escaping (String) -> ()) {
+        func action1(arg: Any,
+                     completion: @escaping (String) -> ()
+        ) {
             completeDelayed(completion: completion)
         }
         
-        func action2(arg1: Any, arg2: Any, completion: @escaping (String) -> ()) {
+        func action2(arg1: Any,
+                     arg2: Any,
+                     completion: @escaping (String) -> ()
+        ) {
             completeDelayed(completion: completion)
         }
                
