@@ -42,8 +42,8 @@ class SimpleFoundationTests: ReflectiveEqualityTests {
         assertNotSameValue(["1": 1], ["2": 1])
     }
 
-    var none            :  Any { Optional<Int>.none     as Any }
-    func some(_ i: Int) -> Any { Optional<Int>.some(i)  as Any }
+    var none            :  Any { Optional<Int>.none    as Any }
+    func some(_ i: Int) -> Any { Optional<Int>.some(i) as Any }
     
     func testEqualOptionals() {
         assertSameValue(none, none)
@@ -165,13 +165,13 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
         let range1 = NSRange(location: 0, length: 1)
         let range2 = NSRange(location: 1, length: 1)
         
-        s1.addAttribute(.font, value: font(), range: range2)
-        s2.addAttribute(.font, value: font(name: "Arial"), range: range2)
+        s1.addFont(font(), range: range2)
+        s2.addFont(font(name: "Arial"), range: range2)
         
         assertNotSameValue(s1, s2)
         
-        s1.addAttribute(.font, value: NSObject(), range: range1)
-        s2.addAttribute(.font, value: NSObject(), range: range1)
+        s1.addFont(NSObject(), range: range1)
+        s2.addFont(NSObject(), range: range1)
         
         assertNotSameValue(s1, s2)
     }
@@ -193,31 +193,31 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
         assertSameValue(parsedHTML, parsedHTML)
     }
     
-    let classIDMatch1 = " 0x111111111"
-    let classIDMatch2 = " 0x000000000"
+    let hexAddress1 = " 0x111111111"
+    let hexAddress2 = " 0x000000000"
     
-    func testStringsNotAffectedByClassIDRemoval() {
-        assertNotSameValue(classIDMatch1, classIDMatch2)
+    func testStringsNotAffectedByHexRemoval() {
+        assertNotSameValue(hexAddress1, hexAddress2)
     }
     
-    func testNSStringsNotAffectedByClassIDRemoval() {
-        assertNotSameValue(classIDMatch1.ns, classIDMatch2.ns)
+    func testNSStringsNotAffectedByHexRemoval() {
+        assertNotSameValue(hexAddress1.ns, hexAddress2.ns)
     }
     
-    func testSubstringsNotAffectedByClassIDRemoval() {
-        let s1 = Substring(classIDMatch1)
-        let s2 = Substring(classIDMatch2)
+    func testSubstringsNotAffectedByHexRemoval() {
+        let s1 = Substring(hexAddress1)
+        let s2 = Substring(hexAddress2)
         assertNotSameValue(s1, s2)
     }
     
-    func testNSAttributedStringContentNotAffectedByClassIDRemoval() throws {
-        let s1 = NSMutableAttributedString(string: classIDMatch1)
-        let s2 = NSMutableAttributedString(string: classIDMatch2)
+    func testNSAttributedStringContentNotAffectedByHexRemoval() throws {
+        let s1 = NSMutableAttributedString(string: hexAddress1)
+        let s2 = NSMutableAttributedString(string: hexAddress2)
         
         let range = NSRange(location: 0, length: s1.length)
         
-        s1.addAttribute(.font, value: font(), range: range)
-        s2.addAttribute(.font, value: font(), range: range)
+        s1.addFont(font(), range: range)
+        s2.addFont(font(), range: range)
                 
         assertNotSameValue(s1, s2)
     }
@@ -257,6 +257,12 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
         
         assertSameValue(t1, t2)
         assertNotSameValue(t1, t3)
+    }
+}
+
+extension NSMutableAttributedString {
+    func addFont(_ font: Any, range: NSRange) {
+        addAttribute(.font, value: font, range: range)
     }
 }
 
@@ -402,13 +408,13 @@ class ComplexCompositionTests: ReflectiveEqualityTests {
         }
         
         assertSameValue(StringHolder(s: "<".ns),
-                    StringHolder(s: "<".ns))
+                        StringHolder(s: "<".ns))
         
         assertNotSameValue(StringHolder(s: "<1".ns),
-                       StringHolder(s: "<2".ns))
+                           StringHolder(s: "<2".ns))
     }
     
-    func testInheritance() throws {
+    func testInheritedPropertiesAreCompared() throws {
         class Parent {
             let a: Int
             init(_ a: Int) { self.a = a }
