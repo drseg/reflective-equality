@@ -136,7 +136,8 @@ extension String {
 
 extension Dictionary {
     enum MergePrecedence {
-        case this, other
+        case this
+        case other
     }
     
     func merging(_ other: [Key : Value], mergePrecedence: MergePrecedence = .this) -> [Key : Value] {

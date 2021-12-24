@@ -12,7 +12,7 @@ public extension XCTestCase {
                           count: count,
                           file: file,
                           line: line,
-                          calling: test())
+                          when: test())
     }
     
     func expectFailure(
@@ -20,7 +20,7 @@ public extension XCTestCase {
         count: Int? = nil,
         file: StaticString = #filePath,
         line: UInt = #line,
-        calling test: @autoclosure () throws -> ()
+        when test: @autoclosure () throws -> ()
     ) {
         var failureCount = 0
         XCTExpectFailure {

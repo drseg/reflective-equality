@@ -105,7 +105,7 @@ class TestUtilitiesTests: XCTestCase {
     
     func testExpectFailureAutoclosure() {
         expectFailure("failed",
-                      calling: XCTFail())
+                      when: XCTFail())
     }
     
     

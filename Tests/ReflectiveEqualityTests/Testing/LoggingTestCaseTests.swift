@@ -7,7 +7,10 @@ final class LoggingTestCaseTests: XCTestCase, LoggingTestCase {
     let file = "LoggingTestCaseTests.swift"
     let event = "test".scrambled
     
-    func eventTrace(function: String = #function, line: UInt) -> EventTrace {
+    func eventTrace(
+        function: String = #function,
+        line: UInt
+    ) -> EventTrace {
         EventTrace(event: event,
                    function: function,
                    fileName: file,
@@ -61,49 +64,49 @@ final class LoggingTestCaseTests: XCTestCase, LoggingTestCase {
     func testAssertLoggedFails() {
         expectFailure(
             "Expected an item number 1, but observed only 0 item(s).",
-            calling: assertLoggedEvent(event)
+            when: assertLoggedEvent(event)
         )
     }
     
-    let eventSequence = ["test1", "test2"]
+    let sequence = ["test1", "test2"]
     
     func testAssertLoggedSequencePasses() {
-        logEventSequence(eventSequence)
-        assertLoggedEventSequence(eventSequence)
+        logEventSequence(sequence)
+        assertLoggedEventSequence(sequence)
     }
     
     func testAssertLoggedSequenceFails() {
         XCTExpectFailure()
-        assertLoggedEventSequence(eventSequence)
-        logEventSequence(eventSequence)
-        assertLoggedEventSequence(eventSequence, startingAt: 1)
+        assertLoggedEventSequence(sequence)
+        logEventSequence(sequence)
+        assertLoggedEventSequence(sequence, startingAt: 1)
     }
     
     func testAssertLoggedLastPasses() {
-        logEventSequence(eventSequence)
+        logEventSequence(sequence)
         assertLastLoggedEvent("test2")
     }
     
     func testAssertLoggedLastFails() {
         XCTExpectFailure()
-        logEventSequence(eventSequence)
+        logEventSequence(sequence)
         assertLastLoggedEvent("test1")
     }
     
     func testAssertLoggedLastSequencePasses() {
         logEvent(event)
-        logEventSequence(eventSequence)
-        assertLastLoggedEventSequence(eventSequence)
+        logEventSequence(sequence)
+        assertLastLoggedEventSequence(sequence)
     }
     
     func testAssertLoggedLastSequenceFails() {
         XCTExpectFailure()
         logEvent(event)
-        logEventSequence(eventSequence)
+        logEventSequence(sequence)
         assertLastLoggedEventSequence([event, "test1"])
     }
     
-    func testFormatter() throws {
+    func testFormatter() {
         let expected =
 """
 
