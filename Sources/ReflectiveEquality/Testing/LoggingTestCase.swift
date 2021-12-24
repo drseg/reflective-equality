@@ -141,7 +141,7 @@ extension Collection where Element == EventTrace {
             let index = " \(entry.i) "
             let event = " \(trace.event) "
             let function = " \(trace.function) "
-            let fileAndLine = " \(trace.fileName) (line \(trace.line)) "
+            let fileAndLine = " \(trace.fileName):\(trace.line) "
             
             columnWidths = max(columnWidths, [index,
                                               event,
@@ -167,7 +167,7 @@ extension Collection where Element == EventTrace {
                 .reduce(into: "", padColumn) + divider
         }
         
-        let header = "| Index | Event | Function | File & Line |"
+        let header = "| i | Event | Function | File & Line |"
         let divider = "|"
         var columnWidths = header
             .split(separator: Character(divider))

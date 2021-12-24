@@ -112,9 +112,9 @@ final class LoggingTestCaseTests: XCTestCase, LoggingTestCase {
 
 **Start Log**
 
-| Index | Event  | Function        | File & Line                           |
-| 0     | event  | testFormatter() | \(file + "" + "") (line \(#line + 7)) |
-| 1     | event2 | testFormatter() | \(file + "" + "") (line \(#line + 7)) |
+| i | Event  | Function        | File & Line                    |
+| 0 | event  | testFormatter() | \(file + "" + ""):\(#line + 7) |
+| 1 | event2 | testFormatter() | \(file + "" + ""):\(#line + 7) |
 
 **End Log**
 
