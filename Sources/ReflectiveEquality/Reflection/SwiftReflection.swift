@@ -68,7 +68,7 @@ extension Mirror {
 
 extension String {
     var removingClassIDs: String {
-        removingMatches("[ =(]0x[0-9a-f]{\(hexLength)}")
+        removingMatches("[ =(]0x[0-9a-f]+")
     }
     
     var hexLength: Int {

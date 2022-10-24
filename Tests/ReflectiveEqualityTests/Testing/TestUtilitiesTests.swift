@@ -2,7 +2,6 @@ import XCTest
 @testable import ReflectiveEquality
 
 class TestUtilitiesTests: XCTestCase {
-    
     func expectDeferredFailure(
         count: Int? = nil,
         file: StaticString = #file,
