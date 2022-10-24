@@ -71,10 +71,6 @@ extension String {
         removingMatches("[ =(]0x[0-9a-f]+")
     }
     
-    var hexLength: Int {
-        NSObject().description.count - "<NSObject: 0x>".count
-    }
-    
     func removingMatches(_ regex: String) -> String {
         replacingOccurrences(of: regex,
                              with: "",
