@@ -1,4 +1,5 @@
 import XCTest
+@testable import ReflectiveEquality
 
 public func assertSameValue(
     _ lhs: Any,

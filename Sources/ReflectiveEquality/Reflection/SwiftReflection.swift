@@ -1,5 +1,4 @@
 import Foundation
-import XCTest
 
 public func haveSameValue(_ args: [Any]) -> Bool {
     args.allSatisfy { haveSameValue($0, args[0]) }
