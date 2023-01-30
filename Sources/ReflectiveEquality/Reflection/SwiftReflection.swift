@@ -10,7 +10,7 @@ public func haveSameValue(_ lhs: Any, _ rhs: Any) -> Bool {
     deepDescription(lhs) == deepDescription(rhs)
 }
 
-func deepDescription(_ instance: Any) -> String {
+public func deepDescription(_ instance: Any) -> String {
     instancesToDescribe(parent: instance).map {
         mirror($0).hasChildren
         ? deepDescription($0)
