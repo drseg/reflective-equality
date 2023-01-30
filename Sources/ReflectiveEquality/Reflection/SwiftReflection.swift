@@ -15,7 +15,7 @@ public func deepDescription(_ instance: Any) -> String {
         ? deepDescription($0)
         : shallowDescription($0)
         + shallowObjCDescription($0)
-    }.joined()
+    }.joined() + shallowDescription(instance)
 }
 
 func shallowObjCDescription(_ instance: Any) -> String {

@@ -316,6 +316,13 @@ class SimpleCompositionTests: ReflectiveEqualityTests {
         assertSameValue(OneValue.first(1), OneValue.first(1))
         assertNotSameValue(OneValue.first(1), OneValue.first(2))
     }
+    
+    func testMultipleAssociatedValues() {
+        enum OneValue { case first(Int), second(Int) }
+        
+        assertNotSameValue(OneValue.first(1), OneValue.second(1))
+        assertNotSameValue(OneValue.first(1), OneValue.first(2))
+    }
 }
 
 class ComplexCompositionTests: ReflectiveEqualityTests {
