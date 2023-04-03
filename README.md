@@ -1,6 +1,6 @@
 # Reflective Equality
 
-Reflective Equality is a set of global functions that allows two Swift 'Any' values to be compared for their value equality. 
+Reflective Equality is a set of global functions that allows two Swift 'Any' instances to be compared by value. 
 
 Values are compared by recursively traversing their properties and subproperties, as well as those of their parents (and parents' parents, etc.), combining the reflection affordances of `Swift.Mirror`, `Swift.String(describing:)`, and the Objective C runtime.
 
