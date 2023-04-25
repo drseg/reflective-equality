@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "ReflectiveEquality",
+    name: "reflective-equality",
     products: [
         .library(
             name: "ReflectiveEquality",
