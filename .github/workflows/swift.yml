@@ -20,5 +20,9 @@ jobs:
       run: swift build -v
     - name: Run tests
       run: swift test -v
-    - name: Coveralls GitHub Action
-      uses: coverallsapp/github-action@v1
+    - name: Report Coveralls (macOS)
+      if: startsWith(runner.os, 'macOS')
+      run: |
+        brew tap coverallsapp/coveralls --quiet
+        brew install coveralls --quiet
+        coveralls
