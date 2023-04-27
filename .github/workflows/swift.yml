@@ -22,13 +22,3 @@ jobs:
       
     - name: Run tests
       run: swift test -v --enable-code-coverage
-      
-    - name: Swift Coverage Report
-      uses: maxep/spm-lcov-action@0.3.1
-
-    - name: Report Coveralls (macOS)
-      if: startsWith(runner.os, 'macOS')
-      run: |
-        brew tap coverallsapp/coveralls --quiet
-        brew install coveralls --quiet
-        coveralls
