@@ -1,6 +1,6 @@
 # Reflective Equality
 
-![GitHub](https://img.shields.io/github/license/drseg/reflective-equality) ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/drseg/reflective-equality/swift.yml?label=all%20tests)
+[![codecov](https://codecov.io/gh/drseg/reflective-equality/branch/master/graph/badge.svg?token=FAYRLLCT5P)](https://codecov.io/gh/drseg/reflective-equality) ![Testspace tests](https://img.shields.io/testspace/tests/drseg/drseg:reflective-equality/master) ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/drseg/reflective-equality/swift.yml) ![GitHub](https://img.shields.io/github/license/drseg/reflective-equality) 
 
 Reflective Equality is a set of global functions that allows two Swift 'Any' instances to be compared by value. 
 
