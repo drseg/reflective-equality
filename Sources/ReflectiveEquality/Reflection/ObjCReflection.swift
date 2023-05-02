@@ -139,7 +139,7 @@ extension Dictionary {
         case this
         case other
     }
-    
+
     func merging(_ other: [Key : Value], mergePrecedence: MergePrecedence = .this) -> [Key : Value] {
         merging(other) { this, other in
             mergePrecedence == .this ? this : other

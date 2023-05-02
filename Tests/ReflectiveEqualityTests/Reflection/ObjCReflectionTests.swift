@@ -9,6 +9,17 @@ final class ObjCReflectionTests: XCTestCase {
                                       attributes: [.font: NSFont(name: "Arial",
                                                                  size: 10)!])
     
+    func testDictionaryMerge() {
+        let d1 = ["cat": "cat"]
+        let d2 = ["cat": "bat"]
+        
+        let m1 = d1.merging(d2)
+        let m2 = d1.merging(d2, mergePrecedence: .other)
+        
+        XCTAssertEqual(m1["cat"], "cat")
+        XCTAssertEqual(m2["cat"], "bat")
+    }
+    
     func testProperties() {
         XCTAssertEqual(s.properties["string"] as? String, "cat")
         XCTAssertFalse(s.properties.description.contains("Arial"))

@@ -79,6 +79,6 @@ extension String {
 
 infix operator ???
 
-func ???(_ lhs: [Any]?, _ rhs: [Any]) -> [Any] {
-    (lhs?.isEmpty ?? true) ? rhs : lhs!
+func ???(_ lhs: [Any], _ rhs: [Any]) -> [Any] {
+    lhs.isEmpty ? rhs : lhs
 }
