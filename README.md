@@ -64,7 +64,7 @@ class MyClass: XCTestCase {
         }
 
         XCTAssertEqual(deepDescription(parsedHTML), deepDescription(parsedHTML)) // ✅
-		XCTAssertEqual(parsedHTML, parsedHTML) // ❌
+        XCTAssertEqual(parsedHTML, parsedHTML) // ❌
     }
 }
 ```
