@@ -17,27 +17,27 @@ class SimpleFoundationTests: ReflectiveEqualityTests {
     }
     
     func testEqualArrays() {
-        assertSameValue([], [])
+        assertSameValue([Int](), [Int]())
         assertSameValue([1], [1])
         assertSameValue([1, 2], [1, 2])
         assertSameValue([[1, 2], [1, 2]], [[1, 2], [1, 2]])
     }
     
     func testNonEqualArrays() {
-        assertNotSameValue([], [1])
+        assertNotSameValue([Int](), [1])
         assertNotSameValue([1], [2])
         assertNotSameValue([1, 2], [1, 3])
         assertNotSameValue([[1, 2], [1, 2]], [[1, 2], [1, 3]])
     }
     
     func testEqualDictionaries() {
-        assertSameValue([:], [:])
+        assertSameValue([String: String](), [String: String]())
         assertSameValue(["1": 1], ["1": 1])
         assertSameValue(["1": ["1": 1]], ["1": ["1": 1]])
     }
     
     func testNonEqualDictionaries() {
-        assertNotSameValue([:], ["1": 1])
+        assertNotSameValue([String: Int](), ["1": 1])
         assertNotSameValue(["1": 1], ["1": 2])
         assertNotSameValue(["1": 1], ["2": 1])
     }

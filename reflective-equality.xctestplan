@@ -1,0 +1,25 @@
+{
+  "configurations" : [
+    {
+      "id" : "6369E5FF-010E-418C-B795-EDA10B1BC853",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "ReflectiveEqualityTests",
+        "name" : "ReflectiveEqualityTests"
+      }
+    }
+  ],
+  "version" : 1
+}
