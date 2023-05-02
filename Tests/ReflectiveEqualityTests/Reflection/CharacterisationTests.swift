@@ -11,7 +11,7 @@ final class StringDescribingTests: ReflectiveEqualityTests {
         (1, 1) => "(1, 1)"
         ("1", "1") => "(\"1\", \"1\")"
         
-        [] => "[]"
+        [Int]() => "[]"
         [1, 1] => "[1, 1]"
         [1: 1] => "[1: 1]"
     }
