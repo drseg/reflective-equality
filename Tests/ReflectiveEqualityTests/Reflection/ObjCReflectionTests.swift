@@ -5,9 +5,16 @@ import ExceptionCatcher
 final class ObjCReflectionTests: XCTestCase {
 #warning("Probing ivars often leads to EXC_BAD_ACCESS. It is here for completeness but in general only properties should be used")
     
+    #if os(macOS)
     let s = NSMutableAttributedString(string: "cat",
                                       attributes: [.font: NSFont(name: "Arial",
                                                                  size: 10)!])
+    #else
+    let s = NSMutableAttributedString(string: "cat",
+                                      attributes: [.font: UIFont(name: "Arial",
+                                                                 size: 10)!])
+    #endif
+    
     
     func testDictionaryMerge() {
         let d1 = ["cat": "cat"]

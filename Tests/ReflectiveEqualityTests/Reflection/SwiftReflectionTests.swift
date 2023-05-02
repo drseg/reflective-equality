@@ -87,9 +87,16 @@ class SimpleFoundationTests: ReflectiveEqualityTests {
 }
 
 class ComplexFoundationTests: ReflectiveEqualityTests {
+    #if os(macOS)
     func font(name: String = "Helvetica", size: CGFloat = 10) -> NSFont {
         NSFont(name: name, size: size)!
     }
+    #else
+    func font(name: String = "Helvetica", size: CGFloat = 10) -> UIFont {
+        UIFont(name: name, size: size)!
+    }
+    #endif
+    
     
     func testArrayOfNSObject() {
         assertSameValue([nsO], [nsO])
@@ -183,13 +190,13 @@ class ComplexFoundationTests: ReflectiveEqualityTests {
         var parsingOptions: [ReadingOption: Any] {
             [ReadingOption.documentType: DocumentType.html]
         }
-
+        
         var parsedHTML: NSAttributedString {
-            NSAttributedString(html: html.data(using: .utf8)!,
-                               options: parsingOptions,
-                               documentAttributes: nil)!
+            try! NSAttributedString(data: html.data(using: .utf8)!,
+                                    options: parsingOptions,
+                                    documentAttributes: nil)
         }
-
+        
         assertSameValue(parsedHTML, parsedHTML)
     }
     
