@@ -5,6 +5,12 @@ import PackageDescription
 
 let package = Package(
     name: "reflective-equality",
+    platforms: [
+        .macOS(.v10_13),
+        .iOS(.v11),
+        .tvOS(.v11),
+        .watchOS(.v4)
+    ],
     products: [
         .library(
             name: "ReflectiveEquality",
