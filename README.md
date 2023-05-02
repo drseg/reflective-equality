@@ -1,6 +1,6 @@
 # Reflective Equality
 
-[![codecov][image-1]][1] ![Testspace tests][image-2] ![GitHub Workflow Status][image-3] ![GitHub][image-4] 
+![Platform Compatability][image-1]![Swift Compatability][image-2][![codecov][image-3]][1] ![Testspace tests][image-4] ![GitHub Workflow Status][image-5] ![GitHub][image-6] 
 
 Reflective Equality is a set of global functions that allows two Swift 'Any' instances to be compared by value. 
 
@@ -107,7 +107,9 @@ extension NSObject {
 
 [1]:	https://codecov.io/gh/drseg/reflective-equality
 
-[image-1]:	https://codecov.io/gh/drseg/reflective-equality/branch/master/graph/badge.svg?token=FAYRLLCT5P
-[image-2]:	https://img.shields.io/testspace/tests/drseg/drseg:reflective-equality/master
-[image-3]:	https://img.shields.io/github/actions/workflow/status/drseg/reflective-equality/swift.yml
-[image-4]:	https://img.shields.io/github/license/drseg/reflective-equality
+[image-1]:	https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fdrseg%2Freflective-equality%2Fbadge%3Ftype%3Dplatforms
+[image-2]:	https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fdrseg%2Freflective-equality%2Fbadge%3Ftype%3Dswift-versions
+[image-3]:	https://codecov.io/gh/drseg/reflective-equality/branch/master/graph/badge.svg?token=FAYRLLCT5P
+[image-4]:	https://img.shields.io/testspace/tests/drseg/drseg:reflective-equality/master
+[image-5]:	https://img.shields.io/github/actions/workflow/status/drseg/reflective-equality/swift.yml
+[image-6]:	https://img.shields.io/github/license/drseg/reflective-equality
