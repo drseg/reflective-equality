@@ -1,5 +1,5 @@
 # Reflective Equality
- [![codecov][image-1]][1] ![Testspace tests][image-2] ![GitHub Workflow Status][image-3]![Platform Compatability][image-4] ![Swift Compatability][image-5]
+ [![codecov][image-1]][1] ![Testspace tests][image-2] ![GitHub Workflow Status][image-3] ![Platform Compatability][image-4] ![Swift Compatability][image-5]
 
 Reflective Equality is a set of global functions that allows two Swift 'Any' instances to be compared by value. 
 
