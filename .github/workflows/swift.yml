@@ -5,9 +5,9 @@ name: Swift
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 jobs:
   build:
@@ -16,9 +16,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
     - name: Build
       run: swift build -v
-      
     - name: Run tests
-      run: swift test -v --enable-code-coverage
+      run: swift test -v --parallel --enable-code-coverage --xunit-output results.xml
+    - name: Gather code coverage
+      run: xcrun llvm-cov export -format="lcov" .build/debug/Reflective-equalityPackageTests.xctest/Contents/MacOS/Reflective-equalityPackageTests -instr-profile .build/debug/codecov/default.profdata > coverage_report.lcov
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+          files: ./coverage_report.lcov
+          verbose: true
+          
+    - uses: testspace-com/setup-testspace@v1
+      with:
+          domain: ${{github.repository_owner}}
+
+    - name: Publish Results to Testspace
+      run: testspace results.xml
